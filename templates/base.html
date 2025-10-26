@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Robotics Academy{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-gray-50">
+    <!-- Overlay for mobile sidebar (used when screen is small) -->
+    <div id="overlay" class="overlay"></div>
+
+    <div class="flex"> <!-- Use flex container for sidebar + main content -->
+        <!-- Sidebar -->
+        <!-- Start collapsed (or remove 'collapsed' to start open by default) -->
+        <div id="sidebar" class="sidebar collapsed">
+            <!-- Logo Area -->
+            <div class="sidebar-logo">
+                <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content">
+                    <i class="fas fa-robot text-2xl text-blue-300 logo-icon"></i>
+                    <span class="logo-text">Robotics Academy</span>
+                </a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="sidebar-content">
+                <nav class="nav-section">
+                    <div class="nav-items">
+                        <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}" data-tooltip="Dashboard">
+                            <i class="fas fa-chart-bar"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                        <a href="{{ url_for('students') }}" class="nav-item {% if request.endpoint == 'students' %}active{% endif %}" data-tooltip="All Students">
+                            <i class="fas fa-users"></i>
+                            <span class="nav-text">All Students</span>
+                        </a>
+                        <a href="{{ url_for('assignments') }}" class="nav-item {% if request.endpoint == 'assignments' %}active{% endif %}" data-tooltip="Assignments">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span class="nav-text">Assignments</span>
+                        </a>
+                        {# --- UPDATED Link: Assessments -> Gradebook --- #}
+                        <a href="{{ url_for('gradebook') }}" class="nav-item {% if request.endpoint == 'gradebook' %}active{% endif %}" data-tooltip="Gradebook">
+                            <i class="fas fa-edit"></i> {# Changed icon #}
+                            <span class="nav-text">Gradebook</span>
+                        </a>
+                        <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}" data-tooltip="Settings">
+                            <i class="fas fa-cog"></i>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                    </div>
+                </nav>
+
+                <!-- User Profile Section -->
+                <div class="admin-user">
+                    <a href="#" class="admin-link">
+                        <div class="admin-avatar">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                        <div class="admin-info">
+                            <span class="admin-name">Admin User</span>
+                            <span class="admin-role">Administrator</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <!-- Hamburger Toggle Button -->
+                    <button id="sidebarToggle" class="hamburger-toggle-btn">
+                        <i id="toggleIcon" class="fas fa-bars"></i> <!-- Icon changes via JS -->
+                    </button>
+                    <div class="header-title">
+                        <h1 class="text-3xl font-bold text-gray-800">{% block page_title %}Student Management Dashboard{% endblock %}</h1>
+                        <p class="text-gray-600">{% block page_subtitle %}Monitor robotics students across all grades and sections{% endblock %}</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <!-- Notification Bell -->
+                    <button class="notification-btn" aria-label="View notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <!-- User Profile -->
+                    <div class="user-profile">
+                        <i class="fas fa-user text-gray-700"></i>
+                        <span class="font-medium text-gray-800">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content Area -->
+            <main class="content-area">
+                {% block content %}{% endblock %}
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Link to external JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Page-specific JavaScript -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

@@ -1,0 +1,3144 @@
+{
+  "classes": [
+    {
+      "id": "c1",
+      "name": "Grade 6th",
+      "section": "Tata",
+      "studentCount": 6,
+      "color": "bg-red-500",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c2",
+      "name": "Grade 6th",
+      "section": "Google",
+      "studentCount": 5,
+      "color": "bg-blue-500",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c3",
+      "name": "Grade 6th",
+      "section": "Infosys",
+      "studentCount": 5,
+      "color": "bg-purple-500",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c4",
+      "name": "Grade 6th",
+      "section": "Mahindra",
+      "studentCount": 5,
+      "color": "bg-green-500",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c5",
+      "name": "Grade 6th",
+      "section": "Intel",
+      "studentCount": 5,
+      "color": "bg-sky-500",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c6",
+      "name": "Grade 6th",
+      "section": "Adobe",
+      "studentCount": 5,
+      "color": "bg-red-600",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c7",
+      "name": "Grade 6th",
+      "section": "Verizon",
+      "studentCount": 5,
+      "color": "bg-amber-500",
+      "grade": "6th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c8",
+      "name": "Grade 7th",
+      "section": "Tata",
+      "studentCount": 5,
+      "color": "bg-red-500",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c9",
+      "name": "Grade 7th",
+      "section": "Google",
+      "studentCount": 5,
+      "color": "bg-blue-500",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c10",
+      "name": "Grade 7th",
+      "section": "Infosys",
+      "studentCount": 5,
+      "color": "bg-purple-500",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c11",
+      "name": "Grade 7th",
+      "section": "Mahindra",
+      "studentCount": 5,
+      "color": "bg-green-500",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c12",
+      "name": "Grade 7th",
+      "section": "Intel",
+      "studentCount": 5,
+      "color": "bg-sky-500",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c13",
+      "name": "Grade 7th",
+      "section": "Adobe",
+      "studentCount": 5,
+      "color": "bg-red-600",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c14",
+      "name": "Grade 7th",
+      "section": "Verizon",
+      "studentCount": 5,
+      "color": "bg-amber-500",
+      "grade": "7th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c15",
+      "name": "Grade 8th",
+      "section": "Tata",
+      "studentCount": 5,
+      "color": "bg-red-500",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c16",
+      "name": "Grade 8th",
+      "section": "Google",
+      "studentCount": 5,
+      "color": "bg-blue-500",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c17",
+      "name": "Grade 8th",
+      "section": "Infosys",
+      "studentCount": 5,
+      "color": "bg-purple-500",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c18",
+      "name": "Grade 8th",
+      "section": "Mahindra",
+      "studentCount": 5,
+      "color": "bg-green-500",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c19",
+      "name": "Grade 8th",
+      "section": "Intel",
+      "studentCount": 5,
+      "color": "bg-sky-500",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c20",
+      "name": "Grade 8th",
+      "section": "Adobe",
+      "studentCount": 5,
+      "color": "bg-red-600",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c21",
+      "name": "Grade 8th",
+      "section": "Verizon",
+      "studentCount": 5,
+      "color": "bg-amber-500",
+      "grade": "8th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c22",
+      "name": "Grade 9th",
+      "section": "Tata",
+      "studentCount": 5,
+      "color": "bg-red-500",
+      "grade": "9th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c23",
+      "name": "Grade 9th",
+      "section": "Google",
+      "studentCount": 5,
+      "color": "bg-blue-500",
+      "grade": "9th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c24",
+      "name": "Grade 9th",
+      "section": "Infosys",
+      "studentCount": 5,
+      "color": "bg-purple-500",
+      "grade": "9th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c25",
+      "name": "Grade 9th",
+      "section": "Mahindra",
+      "studentCount": 5,
+      "color": "bg-green-500",
+      "grade": "9th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c26",
+      "name": "Grade 9th",
+      "section": "Intel",
+      "studentCount": 5,
+      "color": "bg-sky-500",
+      "grade": "9th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c27",
+      "name": "Grade 9th",
+      "section": "Adobe",
+      "studentCount": 5,
+      "color": "bg-red-600",
+      "grade": "9th",
+      "campus": "Main Campus"
+    },
+    {
+      "id": "c28",
+      "name": "Grade 9th",
+      "section": "Verizon",
+      "studentCount": 5,
+      "color": "bg-amber-500",
+      "grade": "9th",
+      "campus": "Main Campus"
+    }
+  ],
+  "students": [
+    {
+      "id": "s1",
+      "classId": "c1",
+      "name": "Student 1",
+      "email": "student1@school.edu",
+      "overallGrade": 20,
+      "status": "At Risk",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1001",
+      "rollNumber": "ROLL001",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s2",
+      "classId": "c1",
+      "name": "Student 2",
+      "email": "student2@school.edu",
+      "overallGrade": 30,
+      "status": "At Risk",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1002",
+      "rollNumber": "ROLL002",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s3",
+      "classId": "c1",
+      "name": "Student 3",
+      "email": "student3@school.edu",
+      "overallGrade": 5,
+      "status": "At Risk",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1003",
+      "rollNumber": "ROLL003",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s4",
+      "classId": "c1",
+      "name": "Student 4",
+      "email": "student4@school.edu",
+      "overallGrade": 50,
+      "status": "At Risk",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1004",
+      "rollNumber": "ROLL004",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s5",
+      "classId": "c1",
+      "name": "Student 5",
+      "email": "student5@school.edu",
+      "overallGrade": 75,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1005",
+      "rollNumber": "ROLL005",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s6",
+      "classId": "c2",
+      "name": "Student 6",
+      "email": "student6@school.edu",
+      "overallGrade": 76,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1006",
+      "rollNumber": "ROLL006",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s7",
+      "classId": "c2",
+      "name": "Student 7",
+      "email": "student7@school.edu",
+      "overallGrade": 77,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1007",
+      "rollNumber": "ROLL007",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s8",
+      "classId": "c2",
+      "name": "Student 8",
+      "email": "student8@school.edu",
+      "overallGrade": 78,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1008",
+      "rollNumber": "ROLL008",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s9",
+      "classId": "c2",
+      "name": "Student 9",
+      "email": "student9@school.edu",
+      "overallGrade": 79,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1009",
+      "rollNumber": "ROLL009",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s10",
+      "classId": "c2",
+      "name": "Student 10",
+      "email": "student10@school.edu",
+      "overallGrade": 80,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1010",
+      "rollNumber": "ROLL010",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s11",
+      "classId": "c3",
+      "name": "Student 11",
+      "email": "student11@school.edu",
+      "overallGrade": 81,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1011",
+      "rollNumber": "ROLL011",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s12",
+      "classId": "c3",
+      "name": "Student 12",
+      "email": "student12@school.edu",
+      "overallGrade": 82,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1012",
+      "rollNumber": "ROLL012",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s13",
+      "classId": "c3",
+      "name": "Student 13",
+      "email": "student13@school.edu",
+      "overallGrade": 83,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1013",
+      "rollNumber": "ROLL013",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s14",
+      "classId": "c3",
+      "name": "Student 14",
+      "email": "student14@school.edu",
+      "overallGrade": 84,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1014",
+      "rollNumber": "ROLL014",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s15",
+      "classId": "c3",
+      "name": "Student 15",
+      "email": "student15@school.edu",
+      "overallGrade": 85,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1015",
+      "rollNumber": "ROLL015",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s16",
+      "classId": "c4",
+      "name": "Student 16",
+      "email": "student16@school.edu",
+      "overallGrade": 86,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1016",
+      "rollNumber": "ROLL016",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s17",
+      "classId": "c4",
+      "name": "Student 17",
+      "email": "student17@school.edu",
+      "overallGrade": 87,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1017",
+      "rollNumber": "ROLL017",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s18",
+      "classId": "c4",
+      "name": "Student 18",
+      "email": "student18@school.edu",
+      "overallGrade": 88,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1018",
+      "rollNumber": "ROLL018",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s19",
+      "classId": "c4",
+      "name": "Student 19",
+      "email": "student19@school.edu",
+      "overallGrade": 89,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1019",
+      "rollNumber": "ROLL019",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s20",
+      "classId": "c4",
+      "name": "Student 20",
+      "email": "student20@school.edu",
+      "overallGrade": 90,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1020",
+      "rollNumber": "ROLL020",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s21",
+      "classId": "c5",
+      "name": "Student 21",
+      "email": "student21@school.edu",
+      "overallGrade": 91,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1021",
+      "rollNumber": "ROLL021",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s22",
+      "classId": "c5",
+      "name": "Student 22",
+      "email": "student22@school.edu",
+      "overallGrade": 92,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1022",
+      "rollNumber": "ROLL022",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s23",
+      "classId": "c5",
+      "name": "Student 23",
+      "email": "student23@school.edu",
+      "overallGrade": 93,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1023",
+      "rollNumber": "ROLL023",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s24",
+      "classId": "c5",
+      "name": "Student 24",
+      "email": "student24@school.edu",
+      "overallGrade": 94,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1024",
+      "rollNumber": "ROLL024",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s25",
+      "classId": "c5",
+      "name": "Student 25",
+      "email": "student25@school.edu",
+      "overallGrade": 95,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1025",
+      "rollNumber": "ROLL025",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s26",
+      "classId": "c6",
+      "name": "Student 26",
+      "email": "student26@school.edu",
+      "overallGrade": 96,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1026",
+      "rollNumber": "ROLL026",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s27",
+      "classId": "c6",
+      "name": "Student 27",
+      "email": "student27@school.edu",
+      "overallGrade": 97,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1027",
+      "rollNumber": "ROLL027",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s28",
+      "classId": "c6",
+      "name": "Student 28",
+      "email": "student28@school.edu",
+      "overallGrade": 98,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1028",
+      "rollNumber": "ROLL028",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s29",
+      "classId": "c6",
+      "name": "Student 29",
+      "email": "student29@school.edu",
+      "overallGrade": 99,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1029",
+      "rollNumber": "ROLL029",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s30",
+      "classId": "c6",
+      "name": "Student 30",
+      "email": "student30@school.edu",
+      "overallGrade": 70,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1030",
+      "rollNumber": "ROLL030",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s31",
+      "classId": "c7",
+      "name": "Student 31",
+      "email": "student31@school.edu",
+      "overallGrade": 71,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1031",
+      "rollNumber": "ROLL031",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s32",
+      "classId": "c7",
+      "name": "Student 32",
+      "email": "student32@school.edu",
+      "overallGrade": 72,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1032",
+      "rollNumber": "ROLL032",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s33",
+      "classId": "c7",
+      "name": "Student 33",
+      "email": "student33@school.edu",
+      "overallGrade": 73,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1033",
+      "rollNumber": "ROLL033",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s34",
+      "classId": "c7",
+      "name": "Student 34",
+      "email": "student34@school.edu",
+      "overallGrade": 74,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1034",
+      "rollNumber": "ROLL034",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s35",
+      "classId": "c7",
+      "name": "Student 35",
+      "email": "student35@school.edu",
+      "overallGrade": 75,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1035",
+      "rollNumber": "ROLL035",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s36",
+      "classId": "c8",
+      "name": "Student 36",
+      "email": "student36@school.edu",
+      "overallGrade": 76,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1036",
+      "rollNumber": "ROLL036",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s37",
+      "classId": "c8",
+      "name": "Student 37",
+      "email": "student37@school.edu",
+      "overallGrade": 77,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1037",
+      "rollNumber": "ROLL037",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s38",
+      "classId": "c8",
+      "name": "Student 38",
+      "email": "student38@school.edu",
+      "overallGrade": 78,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1038",
+      "rollNumber": "ROLL038",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s39",
+      "classId": "c8",
+      "name": "Student 39",
+      "email": "student39@school.edu",
+      "overallGrade": 79,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1039",
+      "rollNumber": "ROLL039",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s40",
+      "classId": "c8",
+      "name": "Student 40",
+      "email": "student40@school.edu",
+      "overallGrade": 80,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1040",
+      "rollNumber": "ROLL040",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s41",
+      "classId": "c9",
+      "name": "Student 41",
+      "email": "student41@school.edu",
+      "overallGrade": 81,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1041",
+      "rollNumber": "ROLL041",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s42",
+      "classId": "c9",
+      "name": "Student 42",
+      "email": "student42@school.edu",
+      "overallGrade": 82,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1042",
+      "rollNumber": "ROLL042",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s43",
+      "classId": "c9",
+      "name": "Student 43",
+      "email": "student43@school.edu",
+      "overallGrade": 83,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1043",
+      "rollNumber": "ROLL043",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s44",
+      "classId": "c9",
+      "name": "Student 44",
+      "email": "student44@school.edu",
+      "overallGrade": 84,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1044",
+      "rollNumber": "ROLL044",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s45",
+      "classId": "c9",
+      "name": "Student 45",
+      "email": "student45@school.edu",
+      "overallGrade": 85,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1045",
+      "rollNumber": "ROLL045",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s46",
+      "classId": "c10",
+      "name": "Student 46",
+      "email": "student46@school.edu",
+      "overallGrade": 86,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1046",
+      "rollNumber": "ROLL046",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s47",
+      "classId": "c10",
+      "name": "Student 47",
+      "email": "student47@school.edu",
+      "overallGrade": 87,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1047",
+      "rollNumber": "ROLL047",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s48",
+      "classId": "c10",
+      "name": "Student 48",
+      "email": "student48@school.edu",
+      "overallGrade": 88,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1048",
+      "rollNumber": "ROLL048",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s49",
+      "classId": "c10",
+      "name": "Student 49",
+      "email": "student49@school.edu",
+      "overallGrade": 89,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1049",
+      "rollNumber": "ROLL049",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s50",
+      "classId": "c10",
+      "name": "Student 50",
+      "email": "student50@school.edu",
+      "overallGrade": 90,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1050",
+      "rollNumber": "ROLL050",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s51",
+      "classId": "c11",
+      "name": "Student 51",
+      "email": "student51@school.edu",
+      "overallGrade": 91,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1051",
+      "rollNumber": "ROLL051",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s52",
+      "classId": "c11",
+      "name": "Student 52",
+      "email": "student52@school.edu",
+      "overallGrade": 92,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1052",
+      "rollNumber": "ROLL052",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s53",
+      "classId": "c11",
+      "name": "Student 53",
+      "email": "student53@school.edu",
+      "overallGrade": 93,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1053",
+      "rollNumber": "ROLL053",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s54",
+      "classId": "c11",
+      "name": "Student 54",
+      "email": "student54@school.edu",
+      "overallGrade": 94,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1054",
+      "rollNumber": "ROLL054",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s55",
+      "classId": "c11",
+      "name": "Student 55",
+      "email": "student55@school.edu",
+      "overallGrade": 95,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1055",
+      "rollNumber": "ROLL055",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s56",
+      "classId": "c12",
+      "name": "Student 56",
+      "email": "student56@school.edu",
+      "overallGrade": 96,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1056",
+      "rollNumber": "ROLL056",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s57",
+      "classId": "c12",
+      "name": "Student 57",
+      "email": "student57@school.edu",
+      "overallGrade": 97,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1057",
+      "rollNumber": "ROLL057",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s58",
+      "classId": "c12",
+      "name": "Student 58",
+      "email": "student58@school.edu",
+      "overallGrade": 98,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1058",
+      "rollNumber": "ROLL058",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s59",
+      "classId": "c12",
+      "name": "Student 59",
+      "email": "student59@school.edu",
+      "overallGrade": 99,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1059",
+      "rollNumber": "ROLL059",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s60",
+      "classId": "c12",
+      "name": "Student 60",
+      "email": "student60@school.edu",
+      "overallGrade": 70,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1060",
+      "rollNumber": "ROLL060",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s61",
+      "classId": "c13",
+      "name": "Student 61",
+      "email": "student61@school.edu",
+      "overallGrade": 71,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1061",
+      "rollNumber": "ROLL061",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s62",
+      "classId": "c13",
+      "name": "Student 62",
+      "email": "student62@school.edu",
+      "overallGrade": 72,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1062",
+      "rollNumber": "ROLL062",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s63",
+      "classId": "c13",
+      "name": "Student 63",
+      "email": "student63@school.edu",
+      "overallGrade": 73,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1063",
+      "rollNumber": "ROLL063",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s64",
+      "classId": "c13",
+      "name": "Student 64",
+      "email": "student64@school.edu",
+      "overallGrade": 74,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1064",
+      "rollNumber": "ROLL064",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s65",
+      "classId": "c13",
+      "name": "Student 65",
+      "email": "student65@school.edu",
+      "overallGrade": 75,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1065",
+      "rollNumber": "ROLL065",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s66",
+      "classId": "c14",
+      "name": "Student 66",
+      "email": "student66@school.edu",
+      "overallGrade": 76,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1066",
+      "rollNumber": "ROLL066",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s67",
+      "classId": "c14",
+      "name": "Student 67",
+      "email": "student67@school.edu",
+      "overallGrade": 77,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1067",
+      "rollNumber": "ROLL067",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s68",
+      "classId": "c14",
+      "name": "Student 68",
+      "email": "student68@school.edu",
+      "overallGrade": 78,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1068",
+      "rollNumber": "ROLL068",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s69",
+      "classId": "c14",
+      "name": "Student 69",
+      "email": "student69@school.edu",
+      "overallGrade": 79,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1069",
+      "rollNumber": "ROLL069",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s70",
+      "classId": "c14",
+      "name": "Student 70",
+      "email": "student70@school.edu",
+      "overallGrade": 80,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1070",
+      "rollNumber": "ROLL070",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s71",
+      "classId": "c15",
+      "name": "Student 71",
+      "email": "student71@school.edu",
+      "overallGrade": 81,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1071",
+      "rollNumber": "ROLL071",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s72",
+      "classId": "c15",
+      "name": "Student 72",
+      "email": "student72@school.edu",
+      "overallGrade": 82,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1072",
+      "rollNumber": "ROLL072",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s73",
+      "classId": "c15",
+      "name": "Student 73",
+      "email": "student73@school.edu",
+      "overallGrade": 83,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1073",
+      "rollNumber": "ROLL073",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s74",
+      "classId": "c15",
+      "name": "Student 74",
+      "email": "student74@school.edu",
+      "overallGrade": 84,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1074",
+      "rollNumber": "ROLL074",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s75",
+      "classId": "c15",
+      "name": "Student 75",
+      "email": "student75@school.edu",
+      "overallGrade": 85,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1075",
+      "rollNumber": "ROLL075",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s76",
+      "classId": "c16",
+      "name": "Student 76",
+      "email": "student76@school.edu",
+      "overallGrade": 86,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1076",
+      "rollNumber": "ROLL076",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s77",
+      "classId": "c16",
+      "name": "Student 77",
+      "email": "student77@school.edu",
+      "overallGrade": 87,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1077",
+      "rollNumber": "ROLL077",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s78",
+      "classId": "c16",
+      "name": "Student 78",
+      "email": "student78@school.edu",
+      "overallGrade": 88,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1078",
+      "rollNumber": "ROLL078",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s79",
+      "classId": "c16",
+      "name": "Student 79",
+      "email": "student79@school.edu",
+      "overallGrade": 89,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1079",
+      "rollNumber": "ROLL079",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s80",
+      "classId": "c16",
+      "name": "Student 80",
+      "email": "student80@school.edu",
+      "overallGrade": 90,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1080",
+      "rollNumber": "ROLL080",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s81",
+      "classId": "c17",
+      "name": "Student 81",
+      "email": "student81@school.edu",
+      "overallGrade": 91,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1081",
+      "rollNumber": "ROLL081",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s82",
+      "classId": "c17",
+      "name": "Student 82",
+      "email": "student82@school.edu",
+      "overallGrade": 92,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1082",
+      "rollNumber": "ROLL082",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s83",
+      "classId": "c17",
+      "name": "Student 83",
+      "email": "student83@school.edu",
+      "overallGrade": 93,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1083",
+      "rollNumber": "ROLL083",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s84",
+      "classId": "c17",
+      "name": "Student 84",
+      "email": "student84@school.edu",
+      "overallGrade": 94,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1084",
+      "rollNumber": "ROLL084",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s85",
+      "classId": "c17",
+      "name": "Student 85",
+      "email": "student85@school.edu",
+      "overallGrade": 95,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1085",
+      "rollNumber": "ROLL085",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s86",
+      "classId": "c18",
+      "name": "Student 86",
+      "email": "student86@school.edu",
+      "overallGrade": 96,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1086",
+      "rollNumber": "ROLL086",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s87",
+      "classId": "c18",
+      "name": "Student 87",
+      "email": "student87@school.edu",
+      "overallGrade": 97,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1087",
+      "rollNumber": "ROLL087",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s88",
+      "classId": "c18",
+      "name": "Student 88",
+      "email": "student88@school.edu",
+      "overallGrade": 98,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1088",
+      "rollNumber": "ROLL088",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s89",
+      "classId": "c18",
+      "name": "Student 89",
+      "email": "student89@school.edu",
+      "overallGrade": 99,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1089",
+      "rollNumber": "ROLL089",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s90",
+      "classId": "c18",
+      "name": "Student 90",
+      "email": "student90@school.edu",
+      "overallGrade": 70,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1090",
+      "rollNumber": "ROLL090",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s91",
+      "classId": "c19",
+      "name": "Student 91",
+      "email": "student91@school.edu",
+      "overallGrade": 71,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1091",
+      "rollNumber": "ROLL091",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s92",
+      "classId": "c19",
+      "name": "Student 92",
+      "email": "student92@school.edu",
+      "overallGrade": 72,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1092",
+      "rollNumber": "ROLL092",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s93",
+      "classId": "c19",
+      "name": "Student 93",
+      "email": "student93@school.edu",
+      "overallGrade": 73,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1093",
+      "rollNumber": "ROLL093",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s94",
+      "classId": "c19",
+      "name": "Student 94",
+      "email": "student94@school.edu",
+      "overallGrade": 74,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1094",
+      "rollNumber": "ROLL094",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s95",
+      "classId": "c19",
+      "name": "Student 95",
+      "email": "student95@school.edu",
+      "overallGrade": 75,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1095",
+      "rollNumber": "ROLL095",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s96",
+      "classId": "c20",
+      "name": "Student 96",
+      "email": "student96@school.edu",
+      "overallGrade": 76,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1096",
+      "rollNumber": "ROLL096",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s97",
+      "classId": "c20",
+      "name": "Student 97",
+      "email": "student97@school.edu",
+      "overallGrade": 77,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1097",
+      "rollNumber": "ROLL097",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s98",
+      "classId": "c20",
+      "name": "Student 98",
+      "email": "student98@school.edu",
+      "overallGrade": 78,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1098",
+      "rollNumber": "ROLL098",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s99",
+      "classId": "c20",
+      "name": "Student 99",
+      "email": "student99@school.edu",
+      "overallGrade": 79,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1099",
+      "rollNumber": "ROLL099",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s100",
+      "classId": "c20",
+      "name": "Student 100",
+      "email": "student100@school.edu",
+      "overallGrade": 80,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1100",
+      "rollNumber": "ROLL100",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s101",
+      "classId": "c21",
+      "name": "Student 101",
+      "email": "student101@school.edu",
+      "overallGrade": 81,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1101",
+      "rollNumber": "ROLL101",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s102",
+      "classId": "c21",
+      "name": "Student 102",
+      "email": "student102@school.edu",
+      "overallGrade": 82,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1102",
+      "rollNumber": "ROLL102",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s103",
+      "classId": "c21",
+      "name": "Student 103",
+      "email": "student103@school.edu",
+      "overallGrade": 83,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1103",
+      "rollNumber": "ROLL103",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s104",
+      "classId": "c21",
+      "name": "Student 104",
+      "email": "student104@school.edu",
+      "overallGrade": 84,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1104",
+      "rollNumber": "ROLL104",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s105",
+      "classId": "c21",
+      "name": "Student 105",
+      "email": "student105@school.edu",
+      "overallGrade": 85,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1105",
+      "rollNumber": "ROLL105",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s106",
+      "classId": "c22",
+      "name": "Student 106",
+      "email": "student106@school.edu",
+      "overallGrade": 86,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1106",
+      "rollNumber": "ROLL106",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s107",
+      "classId": "c22",
+      "name": "Student 107",
+      "email": "student107@school.edu",
+      "overallGrade": 87,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1107",
+      "rollNumber": "ROLL107",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s108",
+      "classId": "c22",
+      "name": "Student 108",
+      "email": "student108@school.edu",
+      "overallGrade": 88,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1108",
+      "rollNumber": "ROLL108",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s109",
+      "classId": "c22",
+      "name": "Student 109",
+      "email": "student109@school.edu",
+      "overallGrade": 89,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1109",
+      "rollNumber": "ROLL109",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s110",
+      "classId": "c22",
+      "name": "Student 110",
+      "email": "student110@school.edu",
+      "overallGrade": 90,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1110",
+      "rollNumber": "ROLL110",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s111",
+      "classId": "c23",
+      "name": "Student 111",
+      "email": "student111@school.edu",
+      "overallGrade": 91,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1111",
+      "rollNumber": "ROLL111",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s112",
+      "classId": "c23",
+      "name": "Student 112",
+      "email": "student112@school.edu",
+      "overallGrade": 92,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1112",
+      "rollNumber": "ROLL112",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s113",
+      "classId": "c23",
+      "name": "Student 113",
+      "email": "student113@school.edu",
+      "overallGrade": 93,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1113",
+      "rollNumber": "ROLL113",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s114",
+      "classId": "c23",
+      "name": "Student 114",
+      "email": "student114@school.edu",
+      "overallGrade": 94,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1114",
+      "rollNumber": "ROLL114",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s115",
+      "classId": "c23",
+      "name": "Student 115",
+      "email": "student115@school.edu",
+      "overallGrade": 95,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1115",
+      "rollNumber": "ROLL115",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Google",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s116",
+      "classId": "c24",
+      "name": "Student 116",
+      "email": "student116@school.edu",
+      "overallGrade": 96,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1116",
+      "rollNumber": "ROLL116",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s117",
+      "classId": "c24",
+      "name": "Student 117",
+      "email": "student117@school.edu",
+      "overallGrade": 97,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1117",
+      "rollNumber": "ROLL117",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s118",
+      "classId": "c24",
+      "name": "Student 118",
+      "email": "student118@school.edu",
+      "overallGrade": 98,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1118",
+      "rollNumber": "ROLL118",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s119",
+      "classId": "c24",
+      "name": "Student 119",
+      "email": "student119@school.edu",
+      "overallGrade": 99,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1119",
+      "rollNumber": "ROLL119",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s120",
+      "classId": "c24",
+      "name": "Student 120",
+      "email": "student120@school.edu",
+      "overallGrade": 70,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1120",
+      "rollNumber": "ROLL120",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Infosys",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s121",
+      "classId": "c25",
+      "name": "Student 121",
+      "email": "student121@school.edu",
+      "overallGrade": 71,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1121",
+      "rollNumber": "ROLL121",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s122",
+      "classId": "c25",
+      "name": "Student 122",
+      "email": "student122@school.edu",
+      "overallGrade": 72,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1122",
+      "rollNumber": "ROLL122",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s123",
+      "classId": "c25",
+      "name": "Student 123",
+      "email": "student123@school.edu",
+      "overallGrade": 73,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1123",
+      "rollNumber": "ROLL123",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s124",
+      "classId": "c25",
+      "name": "Student 124",
+      "email": "student124@school.edu",
+      "overallGrade": 74,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1124",
+      "rollNumber": "ROLL124",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s125",
+      "classId": "c25",
+      "name": "Student 125",
+      "email": "student125@school.edu",
+      "overallGrade": 75,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1125",
+      "rollNumber": "ROLL125",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Mahindra",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s126",
+      "classId": "c26",
+      "name": "Student 126",
+      "email": "student126@school.edu",
+      "overallGrade": 76,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1126",
+      "rollNumber": "ROLL126",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s127",
+      "classId": "c26",
+      "name": "Student 127",
+      "email": "student127@school.edu",
+      "overallGrade": 77,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1127",
+      "rollNumber": "ROLL127",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s128",
+      "classId": "c26",
+      "name": "Student 128",
+      "email": "student128@school.edu",
+      "overallGrade": 78,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1128",
+      "rollNumber": "ROLL128",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s129",
+      "classId": "c26",
+      "name": "Student 129",
+      "email": "student129@school.edu",
+      "overallGrade": 79,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1129",
+      "rollNumber": "ROLL129",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s130",
+      "classId": "c26",
+      "name": "Student 130",
+      "email": "student130@school.edu",
+      "overallGrade": 80,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1130",
+      "rollNumber": "ROLL130",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Intel",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s131",
+      "classId": "c27",
+      "name": "Student 131",
+      "email": "student131@school.edu",
+      "overallGrade": 81,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1131",
+      "rollNumber": "ROLL131",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s132",
+      "classId": "c27",
+      "name": "Student 132",
+      "email": "student132@school.edu",
+      "overallGrade": 82,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1132",
+      "rollNumber": "ROLL132",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s133",
+      "classId": "c27",
+      "name": "Student 133",
+      "email": "student133@school.edu",
+      "overallGrade": 83,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1133",
+      "rollNumber": "ROLL133",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s134",
+      "classId": "c27",
+      "name": "Student 134",
+      "email": "student134@school.edu",
+      "overallGrade": 84,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1134",
+      "rollNumber": "ROLL134",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s135",
+      "classId": "c27",
+      "name": "Student 135",
+      "email": "student135@school.edu",
+      "overallGrade": 85,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1135",
+      "rollNumber": "ROLL135",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Adobe",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s136",
+      "classId": "c28",
+      "name": "Student 136",
+      "email": "student136@school.edu",
+      "overallGrade": 86,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1136",
+      "rollNumber": "ROLL136",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s137",
+      "classId": "c28",
+      "name": "Student 137",
+      "email": "student137@school.edu",
+      "overallGrade": 87,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1137",
+      "rollNumber": "ROLL137",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student3.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s138",
+      "classId": "c28",
+      "name": "Student 138",
+      "email": "student138@school.edu",
+      "overallGrade": 88,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1138",
+      "rollNumber": "ROLL138",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student4.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s139",
+      "classId": "c28",
+      "name": "Student 139",
+      "email": "student139@school.edu",
+      "overallGrade": 89,
+      "status": "Good",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1139",
+      "rollNumber": "ROLL139",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student5.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s140",
+      "classId": "c28",
+      "name": "Student 140",
+      "email": "student140@school.edu",
+      "overallGrade": 90,
+      "status": "Excellent",
+      "lastMilestone": "Initial Setup",
+      "uid": "UID1140",
+      "rollNumber": "ROLL140",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student1.jpg",
+      "parentPhone": "+91 98765 43210",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Verizon",
+      "skills": [
+        "Programming",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "s141",
+      "classId": "c1",
+      "name": "RAJU",
+      "email": "raju@gmail.com",
+      "overallGrade": 80,
+      "status": "Good",
+      "lastMilestone": "Account Created",
+      "uid": "UID1141",
+      "rollNumber": "ROLL141",
+      "campus": "Main Campus",
+      "photo": "/static/avatars/student2.jpg",
+      "parentPhone": "9848185465",
+      "joinDate": "2025-10-26",
+      "roboticsTeam": "Team Tata",
+      "skills": [
+        "Designing",
+        "Building",
+        "Web site building"
+      ]
+    }
+  ],
+  "alerts": [
+    {
+      "id": "a1",
+      "studentId": "s5",
+      "classId": "c1",
+      "issue": "Low score on Quiz 1",
+      "type": "grade"
+    },
+    {
+      "id": "a2",
+      "studentId": "s12",
+      "classId": "c3",
+      "issue": "Overall grade dropped below 60%",
+      "type": "grade"
+    },
+    {
+      "id": "a3",
+      "studentId": "s25",
+      "classId": "c5",
+      "issue": "Project 'RoboDesign' overdue",
+      "type": "assignment"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "as1",
+      "classId": "c1",
+      "title": "Intro Circuit Lab",
+      "dueDate": "2025-11-02",
+      "totalPoints": 50,
+      "type": "Lab"
+    },
+    {
+      "id": "as2",
+      "classId": "c1",
+      "title": "Unit 1 Test",
+      "dueDate": "2025-10-31",
+      "totalPoints": 100,
+      "type": "Test"
+    },
+    {
+      "id": "as3",
+      "classId": "c2",
+      "title": "Algorithm Quiz",
+      "dueDate": "2025-11-04",
+      "totalPoints": 20,
+      "type": "Quiz"
+    }
+  ],
+  "grades": {
+    "as1": {
+      "s1": 40,
+      "s2": 45,
+      "s3": 35
+    },
+    "as2": {
+      "s1": 78,
+      "s2": 85,
+      "s4": 91
+    },
+    "as3": {
+      "s6": 15,
+      "s7": 18
+    }
+  }
+}

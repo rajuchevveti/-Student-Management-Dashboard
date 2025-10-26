@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Robotics Academy - {{ student.name }}{% endblock %}
+
+{% block page_title %}{{ student.name }}{% endblock %}
+
+{% block page_subtitle %}{{ student.className }} • {{ student.campus }}{% endblock %}
+
+{% block content %}
+<!-- Student Header -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
+    <div class="flex items-center">
+        <div class="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded-full flex items-center justify-center mr-4 md:mr-6 text-gray-500 text-2xl md:text-3xl font-medium flex-shrink-0">
+            {{ student.name[0]|upper if student.name else '?' }}
+        </div>
+        <div>
+            {% set status_text = get_status_from_grade(student.overallGrade) %}
+            {% set status_classes = 'bg-gray-100 text-gray-800' %}
+            {% if status_text == 'Excellent' %}{% set status_classes = 'bg-green-100 text-green-800' %}
+            {% elif status_text == 'Good' %}{% set status_classes = 'bg-blue-100 text-blue-800' %}
+            {% elif status_text == 'Needs Help' %}{% set status_classes = 'bg-yellow-100 text-yellow-800' %}
+            {% elif status_text == 'At Risk' %}{% set status_classes = 'bg-red-100 text-red-800' %}
+            {% endif %}
+            <span class="px-2.5 py-1 {{ status_classes }} rounded-full text-xs font-semibold mb-1 inline-block">
+                {{ status_text }}
+            </span>
+             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">{{ student.name }}</h1>
+             <p class="text-sm text-gray-500 mt-1">{{ student.className }} • {{ student.campus }}</p>
+        </div>
+    </div>
+    <div class="flex space-x-3 mt-4 lg:mt-0 w-full lg:w-auto justify-end">
+        <button onclick="window.location.href='{{ url_for('class_view', class_id=student.classId) }}'"
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Class
+        </button>
+        <button onclick="showEditStudentModal('{{ student.id }}')"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-edit mr-2"></i>Edit Profile
+        </button>
+    </div>
+</div>
+
+<!-- Student Information Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Basic Information -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5 lg:col-span-2">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Basic Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 pt-3 text-sm">
+            <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">UID</label><p class="mt-1 text-gray-800 font-medium">{{ student.uid | default('-') }}</p></div>
+            <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Roll Number</label><p class="mt-1 text-gray-800 font-medium">{{ student.rollNumber | default('-') }}</p></div>
+            <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Email</label><p class="mt-1 text-gray-800">{{ student.email | default('-') }}</p></div>
+            <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Parent Phone</label><p class="mt-1 text-gray-800">{{ student.parentPhone | default('-') }}</p></div>
+            <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</label><p class="mt-1 text-gray-800">{{ student.joinDate | default('-') }}</p></div>
+             <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Robotics Team</label><p class="mt-1 text-gray-800">{{ student.roboticsTeam | default('-') }}</p></div>
+        </div>
+    </div>
+    <!-- Performance Stats -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Performance Overview</h3>
+        <div class="space-y-5 pt-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Overall Grade</label>
+                <div class="flex items-center mt-2">
+                    <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden"><div class="bg-green-500 h-2 rounded-full" style="width: {{ student.overallGrade | default(0) }}%"></div></div>
+                    <span class="ml-3 text-base font-semibold text-gray-800">{{ student.overallGrade | default(0) }}%</span>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Status</label>
+                <span class="mt-2 inline-block px-2.5 py-1 {{ status_classes }} rounded-full text-xs font-semibold">{{ status_text }}</span>
+            </div>
+             <div><label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Last Milestone</label><p class="mt-1 text-sm text-gray-700">{{ student.lastMilestone | default('-') }}</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Skills and Assignments -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Skills -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Robotics Skills</h3>
+        <div class="flex flex-wrap gap-2 pt-3">
+            {% if student.skills %}
+                {% for skill in student.skills %}<span class="px-2.5 py-1 bg-purple-100 text-purple-800 rounded-md text-xs font-medium">{{ skill }}</span>{% endfor %}
+            {% else %}<p class="text-sm text-gray-500">No skills listed.</p>{% endif %}
+        </div>
+    </div>
+    <!-- Recent Assignments -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Recent Assignments</h3>
+        {% if assignments %}
+        <div class="space-y-3 pt-3 max-h-60 overflow-y-auto pr-2">
+            {% for assignment in assignments %}
+            <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50/50">
+                <div>
+                    <p class="text-sm font-medium text-gray-800">{{ assignment.title }}</p>
+                    <p class="text-xs text-gray-500">Due: {{ assignment.dueDate }} • <span class="text-gray-400">{{ assignment.type }}</span></p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap
+                    {% if assignment.score is not none %}
+                        {% set score_percent = (assignment.score / (assignment.totalPoints | default(1))) * 100 if assignment.totalPoints else 0 %}
+                        {% if score_percent >= 90 %}bg-green-100 text-green-800{% elif score_percent >= 70 %}bg-blue-100 text-blue-800{% elif score_percent >= 60 %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}
+                    {% else %}bg-gray-100 text-gray-600{% endif %}">
+                    {% if assignment.score is not none %}{{ assignment.score }}/{{ assignment.totalPoints }}{% else %}Not Graded{% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500 pt-3"><i class="fas fa-clipboard-list text-3xl mb-3 text-gray-300"></i><p class="text-sm">No assignments found.</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions (Restored) -->
+<div class="bg-white rounded-xl shadow-md border border-gray-100 p-5 mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Quick Actions</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3">
+        <button onclick="showNotImplementedToast('Update Grade Quick Action')" class="p-4 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-center text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-edit text-xl mb-1 block"></i>Update Grade</button>
+        <button onclick="showNotImplementedToast('Contact Parent Action')" class="p-4 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors text-center text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-envelope text-xl mb-1 block"></i>Contact Parent</button>
+        {# --- UPDATED Button to Link for PDF Report --- #}
+        <a href="{{ url_for('student_report_pdf', student_id=student.id) }}"
+           target="_blank" {# Optionally open in new tab #}
+           class="no-print p-4 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors text-center text-sm font-medium inline-block">
+             <i class="fas fa-file-pdf text-xl mb-1 block"></i>Generate Report
+        </a>
+        {# --- END UPDATE --- #}
+         <button onclick="showNotImplementedToast('View Full Assessment History')" class="p-4 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors text-center text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-history text-xl mb-1 block"></i>Assessment History</button>
+    </div>
+</div>
+
+<!-- Edit Student Modal -->
+<div id="editStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="editStudentModalTitle" role="dialog" aria-modal="true">
+     <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="editStudentDialog">
+        <form id="editStudentForm" data-student-id="">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-xl font-semibold text-gray-800" id="editStudentModalTitle">Edit Student Profile</h3>
+                    <button type="button" onclick="closeEditStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <div class="space-y-4">
+                     <input type="hidden" id="editStudentId" name="studentId">
+                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><label for="editStudentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label><input type="text" id="editStudentName" name="name" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"></div>
+                         <div><label for="editStudentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label><input type="email" id="editStudentEmail" name="email" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"></div>
+                    </div>
+                     <div>
+                         <label for="editStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                         <select id="editStudentClass" name="classId" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                             <option value="" disabled>Select a class...</option>
+                              {% for cls in all_classes | sort(attribute='grade') | sort(attribute='name') %}
+                              <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }}</option>
+                             {% endfor %}
+                         </select>
+                    </div>
+                      <div><label class="block text-sm font-medium text-gray-700 mb-1">UID</label><p id="editStudentUidDisplay" class="mt-1 text-sm text-gray-500 bg-gray-100 px-3 py-2 rounded-lg"></p></div>
+                     <div><label class="block text-sm font-medium text-gray-700 mb-1">Roll Number</label><p id="editStudentRollDisplay" class="mt-1 text-sm text-gray-500 bg-gray-100 px-3 py-2 rounded-lg"></p></div>
+                    <div><label for="editStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label><input type="tel" id="editStudentParentPhone" name="parentPhone" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"></div>
+                     <div><label for="editStudentSkills" class="block text-sm font-medium text-gray-700 mb-1">Skills (comma-separated)</label><input type="text" id="editStudentSkills" name="skills" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+            </div>
+             <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                 <button type="button" onclick="deleteStudent('{{ student.id }}')" class="px-5 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 hover:border-red-400 transition-colors inline-flex items-center"><i class="fas fa-trash-alt mr-2"></i>Delete Student</button>
+                 <div class="space-x-3">
+                    <button type="button" onclick="closeEditStudentModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center"><i class="fas fa-save mr-2"></i>Save Changes</button>
+                 </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Ensure global script.js is loaded via base.html #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initializeEditStudentFormListener === 'function') {
+            initializeEditStudentFormListener();
+        } else { console.error("Edit form listener init function missing!"); }
+        // Modal listeners handled globally in script.js now
+    });
+     // Placeholder function (should be defined in global script.js)
+    if (typeof showNotImplementedToast === 'undefined') {
+        function showNotImplementedToast(feature = 'This feature') {
+            if (typeof showToast === 'function') { showToast(`${feature} is not implemented yet.`, 'info'); }
+            else { alert(`${feature} is not implemented yet.`); }
+        }
+    }
+</script>
+{% endblock %}
+

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Robotics Academy - {{ class_data.name }} - {{ class_data.section }}{% endblock %}
+
+{% block page_title %}{{ class_data.name }} - {{ class_data.section }}{% endblock %}
+
+{% block page_subtitle %}{{ class_data.campus }} • {{ students|length }} Students{% endblock %}
+
+{% block content %}
+<!-- Class Header with Actions -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 md:mb-8 gap-4">
+    <div>
+        <span class="text-sm font-medium px-3 py-1 rounded-full text-white {{ class_data.color }}">
+            {{ class_data.section }} Team
+        </span>
+         <span class="ml-2 text-sm text-gray-500">({{ class_data.grade }})</span>
+    </div>
+    <div class="flex space-x-3 w-full lg:w-auto justify-end">
+        <button onclick="window.location.href='{{ url_for('dashboard') }}'"
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Dashboard
+        </button>
+        <a href="{{ url_for('gradebook', class_id=class_data.id) }}"
+                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium flex items-center">
+             <i class="fas fa-edit mr-2"></i>View Gradebook
+        </a>
+        <a href="{{ url_for('export_grades', class_id=class_data.id) }}"
+           class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-download mr-2"></i>Export Grades
+        </a>
+    </div>
+</div>
+
+<!-- Class Statistics -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
+        {# --- ADDED ID --- #}
+        <div id="stat-total-students" class="text-2xl font-bold text-blue-600">{{ students|length }}</div>
+        <div class="text-xs md:text-sm text-gray-500 mt-1">Total Students</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
+        <div class="text-2xl font-bold text-green-600">
+            {# --- ADDED ID --- #}
+            <span id="stat-avg-grade">
+                {% set total_grade = namespace(value=0) %}
+                {% set count = namespace(value=0) %}
+                {% for s in students if s.overallGrade is defined and s.overallGrade is not none %}
+                    {% set total_grade.value = total_grade.value + s.overallGrade %}
+                    {% set count.value = count.value + 1 %}
+                {% endfor %}
+                {% if count.value > 0 %}{{ (total_grade.value / count.value)|round }}%{% else %}N/A{% endif %}
+            </span>
+        </div>
+        <div class="text-xs md:text-sm text-gray-500 mt-1">Average Grade</div>
+    </div>
+     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
+         {# --- ADDED ID --- #}
+        <div id="stat-at-risk" class="text-2xl font-bold text-red-600">
+             {% set at_risk_count = namespace(value=0) %}
+             {% for s in students %}
+                {% if get_status_from_grade(s.overallGrade) == 'At Risk' %}
+                    {% set at_risk_count.value = at_risk_count.value + 1 %}
+                {% endif %}
+             {% endfor %}
+             {{ at_risk_count.value }}
+        </div>
+        <div class="text-xs md:text-sm text-gray-500 mt-1">Students At Risk</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
+        <div class="text-2xl font-bold text-gray-700">{{ class_data.grade }}</div>
+        <div class="text-xs md:text-sm text-gray-500 mt-1">Grade Level</div>
+    </div>
+</div>
+
+<!-- Students Table -->
+<div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div class="p-4 md:p-5 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">Students List</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">UID</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">Roll No</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Grade</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for student in students %}
+                <tr class="hover:bg-gray-50 transition-colors duration-150 student-row" data-student-id="{{ student.id }}">
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-gray-200">
+                                <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?'}}</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ student.name }}</p>
+                                <p class="text-xs text-gray-500 truncate hidden sm:block">{{ student.email }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 md:px-6 py-3 text-sm text-gray-600 whitespace-nowrap hidden sm:table-cell">{{ student.uid }}</td>
+                    <td class="px-4 md:px-6 py-3 text-sm text-gray-600 whitespace-nowrap hidden md:table-cell">{{ student.rollNumber }}</td>
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <input type="number"
+                               value="{{ student.overallGrade }}" min="0" max="100"
+                               class="w-16 border border-gray-300 rounded px-2 py-1 text-sm grade-input focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                               data-student-id="{{ student.id }}"
+                               onchange="updateGrade('{{ student.id }}', this.value, event)">
+                         <span class="text-xs text-gray-500">%</span>
+                    </td>
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap status-cell">
+                        {% set status_text = get_status_from_grade(student.overallGrade) %}
+                        {% set status_classes = 'bg-gray-100 text-gray-800' %}
+                        {% if status_text == 'Excellent' %}{% set status_classes = 'bg-green-100 text-green-800' %}
+                        {% elif status_text == 'Good' %}{% set status_classes = 'bg-blue-100 text-blue-800' %}
+                        {% elif status_text == 'Needs Help' %}{% set status_classes = 'bg-yellow-100 text-yellow-800' %}
+                        {% elif status_text == 'At Risk' %}{% set status_classes = 'bg-red-100 text-red-800' %}
+                        {% endif %}
+                        <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ status_classes }} status-badge">
+                            {{ status_text }}
+                        </span>
+                    </td>
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <a href="{{ url_for('student_profile', student_id=student.id) }}"
+                                class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
+                            View Profile
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                 <tr><td colspan="6" class="text-center py-10 px-6 text-gray-500"><i class="fas fa-users text-3xl mb-3 text-gray-300"></i><br>No students found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Ensure global script.js is loaded via base.html #}
+<script>
+    // Functions like updateGrade, getStatusInfoFromGrade, updateStatusBadge,
+    // and updateClassViewStats are assumed to be defined in the global script.js
+
+    // Make sure these JS helper functions are available (ideally in script.js)
+     if (typeof getStatusInfoFromGrade === 'undefined') {
+        function getStatusInfoFromGrade(grade) {
+            if (grade === null || grade === undefined || isNaN(grade)) return { text: 'N/A', classes: 'bg-gray-100 text-gray-800'};
+            grade = parseInt(grade);
+            if (grade >= 90) return { text: 'Excellent', classes: 'bg-green-100 text-green-800'};
+            if (grade >= 70) return { text: 'Good', classes: 'bg-blue-100 text-blue-800'};
+            if (grade >= 60) return { text: 'Needs Help', classes: 'bg-yellow-100 text-yellow-800'};
+            return { text: 'At Risk', classes: 'bg-red-100 text-red-800'};
+        }
+    }
+
+     if (typeof updateStatusBadge === 'undefined') {
+         function updateStatusBadge(studentId, grade) {
+            const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
+            if (!row) return;
+            const statusCell = row.querySelector('.status-cell');
+            if (!statusCell) return;
+            const statusInfo = getStatusInfoFromGrade(grade);
+            statusCell.innerHTML = `<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.classes} status-badge">${statusInfo.text}</span>`;
+        }
+    }
+
+    // Define or ensure updateClassViewStats exists (ideally in script.js)
+    if (typeof updateClassViewStats === 'undefined') {
+        function updateClassViewStats() {
+            const statAvgGradeEl = document.getElementById('stat-avg-grade');
+            const statAtRiskEl = document.getElementById('stat-at-risk');
+            const gradeInputs = document.querySelectorAll('.grade-input'); // Get all grade inputs on the page
+
+            if (gradeInputs.length === 0) return; // Not on the right page
+
+            let totalGrade = 0;
+            let studentCount = 0;
+            let atRiskCount = 0;
+
+            gradeInputs.forEach(input => {
+                const gradeNum = parseInt(input.value, 10);
+                if (!isNaN(gradeNum)) {
+                    totalGrade += gradeNum;
+                    studentCount++;
+                    if (gradeNum < 60) {
+                        atRiskCount++;
+                    }
+                }
+            });
+
+            const avgGrade = (studentCount > 0) ? Math.round(totalGrade / studentCount) : 0;
+
+            if (statAvgGradeEl) {
+                statAvgGradeEl.textContent = `${avgGrade}%`;
+            }
+            if (statAtRiskEl) {
+                statAtRiskEl.textContent = atRiskCount;
+            }
+            console.log(`[Debug] Stats updated: Avg: ${avgGrade}%, At Risk: ${atRiskCount}`);
+        }
+    }
+</script>
+{% endblock %}
+

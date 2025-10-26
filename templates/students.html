@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Robotics Academy - All Students{% endblock %}
+
+{% block page_title %}All Students{% endblock %}
+
+{% block page_subtitle %}Manage all registered students{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+    <div>
+        {# Placeholder for potential future actions like bulk import #}
+    </div>
+    <div class="flex space-x-3 w-full md:w-auto justify-end">
+        <button onclick="window.location.href='{{ url_for('dashboard') }}'"
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+        </button>
+        {# --- "Add Student" Button --- #}
+        <button onclick="showAddStudentModal()"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-user-plus mr-2"></i>Add Student
+        </button>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 mb-6 md:mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <!-- Search -->
+        <div class="md:col-span-1">
+            <div class="relative">
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Search name, email, UID..."
+                       class="w-full p-2.5 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Class Filter -->
+        <select id="classFilter" class="p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="all">All Classes</option>
+            {% for cls in all_classes | sort(attribute='grade') | sort(attribute='name') %}
+            <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Status Filter -->
+        <select id="statusFilter" class="p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="all">All Statuses</option>
+            <option value="Excellent">Excellent (90+)</option>
+            <option value="Good">Good (70-89)</option>
+            <option value="Needs Help">Needs Help (60-69)</option>
+            <option value="At Risk">At Risk (<60)</option>
+            <option value="N/A">N/A</option>
+            <option value="Invalid">Invalid Grade</option>
+        </select>
+    </div>
+</div>
+
+<!-- Student Table -->
+<div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Class</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">UID</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Roll No</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Grade</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200" id="studentTableBody">
+                {% for student in students %}
+                <tr class="hover:bg-gray-50 transition-colors duration-150 student-row"
+                    data-student-id="{{ student.id }}"
+                    data-name="{{ student.name|lower }}"
+                    data-status="{{ student.status }}" {# Use status string #}
+                    data-grade="{{ student.overallGrade|default(-1)|int }}" {# Default to -1 if missing #}
+                    data-class-id = "{{ student.classId }}"
+                    data-class-name = "{{ student.className|lower }}"
+                    >
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <div class="flex items-center">
+                             <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-gray-200">
+                                <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?'}}</span>
+                             </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ student.name }}</p>
+                                <p class="text-xs text-gray-500 truncate hidden sm:block">{{ student.email }}</p>
+                            </div>
+                        </div>
+                    </td>
+                     <td class="px-4 md:px-6 py-3 text-xs text-gray-500 whitespace-nowrap">{{ student.className }}</td>
+                    <td class="px-4 md:px-6 py-3 text-sm text-gray-600 whitespace-nowrap hidden md:table-cell">{{ student.uid }}</td>
+                    <td class="px-4 md:px-6 py-3 text-sm text-gray-600 whitespace-nowrap hidden lg:table-cell">{{ student.rollNumber }}</td>
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <input type="number"
+                               value="{{ student.overallGrade }}" min="0" max="100"
+                               class="w-16 border border-gray-300 rounded px-2 py-1 text-sm grade-input focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                               data-student-id="{{ student.id }}"
+                               onchange="updateGrade('{{ student.id }}', this.value, event)">
+                         <span class="text-xs text-gray-500">%</span>
+                    </td>
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap status-cell">
+                        {% set status_text = student.status %} {# Status already calculated in Python #}
+                        {% set status_classes = 'bg-gray-100 text-gray-800' %} {# Default #}
+                        {% if status_text == 'Excellent' %}{% set status_classes = 'bg-green-100 text-green-800' %}
+                        {% elif status_text == 'Good' %}{% set status_classes = 'bg-blue-100 text-blue-800' %}
+                        {% elif status_text == 'Needs Help' %}{% set status_classes = 'bg-yellow-100 text-yellow-800' %}
+                        {% elif status_text == 'At Risk' %}{% set status_classes = 'bg-red-100 text-red-800' %}
+                        {% endif %}
+                        <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ status_classes }} status-badge">
+                            {{ status_text }}
+                        </span>
+                    </td>
+                    <td class="px-4 md:px-6 py-3 whitespace-nowrap">
+                        <a href="{{ url_for('student_profile', student_id=student.id) }}"
+                                class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
+                            View Profile
+                        </a>
+                        {# Add Edit/Delete buttons here if needed later #}
+                    </td>
+                </tr>
+                {% else %}
+                 <tr><td colspan="8" class="text-center py-10 px-6 text-gray-500"><i class="fas fa-users text-3xl mb-3 text-gray-300"></i><br>No students found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addStudentModalTitle" role="dialog" aria-modal="true">
+     <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addStudentDialog">
+        <form id="addStudentForm">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-xl font-semibold text-gray-800" id="addStudentModalTitle">Add New Student</h3>
+                    <button type="button" onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                            <input type="text" id="studentName" name="name" required
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        </div>
+                         <div>
+                            <label for="studentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                            <input type="email" id="studentEmail" name="email" required
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        </div>
+                    </div>
+                     <div>
+                        <label for="studentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                        <select id="studentClass" name="classId" required
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            <option value="" disabled selected>Select a class...</option>
+                             {% for cls in all_classes | sort(attribute='grade') | sort(attribute='name') %}
+                             <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                     {# UID and Roll Number Inputs REMOVED #}
+                    <div>
+                        <label for="studentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                        <input type="tel" id="studentParentPhone" name="parentPhone"
+                               placeholder="+91 XXXXXXXXXX"
+                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                     <div>
+                        <label for="studentSkills" class="block text-sm font-medium text-gray-700 mb-1">Skills (comma-separated)</label>
+                        <input type="text" id="studentSkills" name="skills"
+                               placeholder="e.g., Programming, Design, Electronics"
+                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+            </div>
+            <!-- Footer Actions -->
+             <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                <button type="button" onclick="closeAddStudentModal()"
+                        class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
+                     <i class="fas fa-user-plus mr-2"></i>Add Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Ensure global script.js is loaded via base.html #}
+<script>
+    // --- Initialize listeners specifically for this page ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- REMOVED initializeAddStudentFormListener(); ---
+        // It's called globally in script.js now.
+
+        // --- Filtering/Sorting Logic ---
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const classFilter = document.getElementById('classFilter');
+        const studentRows = document.querySelectorAll('.student-row');
+
+        function filterAndSortStudents() {
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const statusValue = statusFilter ? statusFilter.value : 'all';
+            const classValue = classFilter ? classFilter.value : 'all';
+            let visibleCount = 0;
+
+            studentRows.forEach(row => {
+                const name = row.dataset.name || '';
+                const email = (row.querySelector('td:first-child p:last-child')?.textContent || '').toLowerCase();
+                const uid = (row.querySelector('td:nth-child(3)')?.textContent || '').toLowerCase();
+                const status = row.dataset.status || 'N/A';
+                const classId = row.dataset.classId || '';
+
+                const matchesSearch = searchTerm === '' || name.includes(searchTerm) || email.includes(searchTerm) || uid.includes(searchTerm) ;
+                const matchesStatus = statusValue === 'all' || status === statusValue;
+                const matchesClass = classValue === 'all' || classId === classValue;
+
+                const isVisible = matchesSearch && matchesStatus && matchesClass;
+                row.style.display = isVisible ? '' : 'none';
+                if(isVisible) visibleCount++;
+            });
+        }
+
+        if (searchInput) searchInput.addEventListener('input', debounce(filterAndSortStudents, 300));
+        if (statusFilter) statusFilter.addEventListener('change', filterAndSortStudents);
+        if (classFilter) classFilter.addEventListener('change', filterAndSortStudents);
+    });
+
+    // Helper functions (should be in global script.js)
+    if (typeof getStatusInfoFromGrade === 'undefined') { function getStatusInfoFromGrade(grade) { /* ... JS version ... */ } }
+    if (typeof updateStatusBadge === 'undefined') { function updateStatusBadge(studentId, grade) { /* ... JS version ... */ } }
+    if (typeof debounce === 'undefined') { function debounce(func, wait) { let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>func.apply(this,a),wait)} } }
+
+</script>
+{% endblock %}
+
