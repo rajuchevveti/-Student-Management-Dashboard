@@ -134,68 +134,7 @@ def ensure_data_structure(data):
         elif isinstance(cls, dict) and not cls.get('campus'):
             cls['campus'] = DEFAULT_CAMPUS
             needs_save = True
-    
-    # --- NEW: Assignment Data Migration (Groups assignments) ---
-    for assignment in data.get('assignments', []):
-        if isinstance(assignment, dict) and 'classId' in assignment:
-            # Old format found, migrate it
-            print(f"Migrating assignment: {assignment.get('id')}")
-            class_id = assignment.pop('classId') # Remove old key
-            if class_id:
-                assignment['classIds'] = [class_id] # Add new key as a list
-            else:
-                assignment['classIds'] = []
-            needs_save = True
-    # --- END Assignment Migration ---
-        
-    # --- **** UPDATED: Auto-sync Student Photos by UID **** ---
-    # Define the path to your student photos folder
-    PHOTO_DIR_NAME = 'student_photos'
-    PHOTO_DIR_PATH = os.path.join(app.static_folder, PHOTO_DIR_NAME) # e.g., 'static/student_photos'
-    
-    # 1. Check if the photo directory exists
-    if os.path.exists(PHOTO_DIR_PATH):
-        print(f"Syncing photos from {PHOTO_DIR_PATH}...")
-        found_photos = {} # To store {lowercase_student_uid: filename}
-        
-        # 2. Scan the directory for image files
-        try:
-            for filename in os.listdir(PHOTO_DIR_PATH):
-                file_lower = filename.lower()
-                if file_lower.endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-                    # Get the student UID from the filename (e.g., "KYC041JO.png" -> "kyc041jo")
-                    student_uid = os.path.splitext(filename)[0].lower() # Match by UID, lowercase
-                    found_photos[student_uid] = filename # Map lowercase uid to original cased filename
-        except Exception as e:
-            print(f"Warning: Could not scan photo directory: {e}")
-
-        # 3. Loop through students and update paths
-        if found_photos:
-            students_list = data.get('students', [])
-            for student in students_list:
-                if isinstance(student, dict):
-                    student_uid_from_data = student.get('uid') # Get the student's UID
-                    if student_uid_from_data:
-                        student_uid_lower = student_uid_from_data.lower()
-                        # Check if this student's lowercase UID matches a found photo
-                        if student_uid_lower in found_photos:
-                            # Construct the web path (e.g., /static/student_photos/KYC041JO.png)
-                            new_photo_path = f"/static/{PHOTO_DIR_NAME}/{found_photos[student_uid_lower]}"
-                            
-                            # Only update if the path is different, and mark for saving
-                            if student.get('photo') != new_photo_path:
-                                print(f"Updating photo for student UID {student_uid_from_data}: {new_photo_path}")
-                                student['photo'] = new_photo_path
-                                needs_save = True # Mark that data.json needs to be re-saved
-    else:
-        # Create the directory if it doesn't exist
-        try:
-            os.makedirs(PHOTO_DIR_PATH)
-            print(f"Created photo directory: {PHOTO_DIR_PATH}")
-        except Exception as e:
-            print(f"Warning: Could not create photo directory: {e}")
-    # --- **** END Auto-sync Student Photos **** ---
-
+            
     if needs_save:
         save_data(data)
     return data
@@ -246,15 +185,14 @@ def create_default_data():
         {"id": "a3", "studentId": "s25", "classId": "c5", "issue": "Project 'RoboDesign' overdue", "type": "assignment"}
     ]
     default_data["assignments"] = [
-        # Use new 'classIds' list format
-        {"id": "as1", "classIds": ["c1"], "title": "Intro Circuit Lab", "dueDate": (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'), "totalPoints": 50, "type": "Lab"},
-        {"id": "as2", "classIds": ["c1", "c2"], "title": "Unit 1 Test", "dueDate": (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d'), "totalPoints": 100, "type": "Test"},
-        {"id": "as3", "classIds": ["c3"], "title": "Algorithm Quiz", "dueDate": (datetime.now() + timedelta(days=9)).strftime('%Y-%m-%d'), "totalPoints": 20, "type": "Quiz"}
+        {"id": "as1", "classId": "c1", "title": "Intro Circuit Lab", "dueDate": (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'), "totalPoints": 50, "type": "Lab"},
+        {"id": "as2", "classId": "c1", "title": "Unit 1 Test", "dueDate": (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d'), "totalPoints": 100, "type": "Test"},
+        {"id": "as3", "classId": "c2", "title": "Algorithm Quiz", "dueDate": (datetime.now() + timedelta(days=9)).strftime('%Y-%m-%d'), "totalPoints": 20, "type": "Quiz"}
     ]
     default_data["grades"] = {
-        "as1": {"s1": 40, "s2": 45, "s3": 35}, # Grades for as1
-        "as2": {"s1": 78, "s2": 85, "s4": 91, "s6": 72}, # Grades for as2 (students from c1 and c2)
-        "as3": {"s11": 15, "s12": 18} # Grades for as3
+        "as1": {"s1": 40, "s2": 45, "s3": 35},
+        "as2": {"s1": 78, "s2": 85, "s4": 91},
+        "as3": {"s6": 15, "s7": 18}
     }
     save_data(default_data)
     return default_data
@@ -517,19 +455,12 @@ def delete_class(class_id):
         return jsonify({'success': False, 'message': 'Cannot delete class with enrolled students. Please reassign students first.'}), 400
         
     data['classes'].pop(class_index)
-    # Also delete assignments associated *only* with this class
-    data['assignments'] = [a for a in data.get('assignments', []) if not (isinstance(a, dict) and a.get('classIds') == [class_id])]
-    # We keep assignments linked to multiple classes, but should we remove this class from their list?
-    # For simplicity, we'll only delete assignments that were *only* for this class.
-    # We also need to clean grades for those deleted assignments
-    deleted_assignment_ids = {a.get('id') for a in data.get('assignments', []) if isinstance(a, dict) and a.get('classIds') == [class_id]}
-    data['grades'] = {k: v for k, v in data.get('grades', {}).items() if k not in deleted_assignment_ids}
-    
+    data['assignments'] = [a for a in data.get('assignments', []) if isinstance(a, dict) and a.get('classId') != class_id]
+    data['grades'] = {k: v for k, v in data.get('grades', {}).items() if k not in [a.get('id') for a in data.get('assignments', []) if isinstance(a, dict) and a.get('classId') == class_id]}
     save_data(data)
     print(f"Successfully deleted class: {class_id}")
     return jsonify({'success': True, 'message': 'Class deleted successfully'})
 
-# --- UPDATED /assignments route ---
 @app.route('/assignments')
 def assignments():
     data = load_data()
@@ -540,44 +471,31 @@ def assignments():
     if not isinstance(all_grades, dict):
         print("Warning: Grades data not dict.")
         all_grades = {}
-        
     processed_assignments = []
     for assignment in all_assignments_raw:
         if not isinstance(assignment, dict) or 'id' not in assignment:
             print(f"Skipping invalid: {assignment}")
             continue
-            
         assignment_id = assignment['id']
-        class_ids = assignment.get('classIds', []) # <-- Get list of IDs
-        
-        # Get info for all assigned classes
-        class_infos = [class_map.get(cid) for cid in class_ids if class_map.get(cid)]
-        
-        # Store lists of names and colors
-        assignment['classNames'] = [f"{c.get('name', '')} - {c.get('section', '')}" for c in class_infos]
-        assignment['classColors'] = [c.get('color', 'bg-gray-500') for c in class_infos]
-        
-        # Calculate stats across ALL assigned students
+        class_id = assignment.get('classId')
+        class_info = class_map.get(class_id)
+        assignment['className'] = f"{class_info.get('name', '')} - {class_info.get('section', '')} ({class_info.get('campus', '')})" if class_info else "Unknown"
+        assignment['classColor'] = class_info.get('color', 'bg-gray-500') if class_info else 'bg-gray-500'
         assignment_grades_dict = all_grades.get(assignment_id, {})
         valid_grades_list = []
         if isinstance(assignment_grades_dict, dict):
             valid_grades_list = [g for g in assignment_grades_dict.values() if isinstance(g, (int, float))]
-            
         graded_count = len(valid_grades_list)
         assignment['averageGrade'] = round(sum(valid_grades_list) / graded_count) if graded_count > 0 else None
         assignment['gradedCount'] = graded_count
-        
         processed_assignments.append(assignment)
-        
     processed_assignments.sort(key=lambda x: x.get('dueDate', DEFAULT_DATE_SORT_KEY))
     return render_template('assignments.html',
                            assignments=processed_assignments,
                            class_data=None,
                            all_classes=all_classes,
                            assignment_types=ASSIGNMENT_TYPES)
-# --- END UPDATED /assignments route ---
 
-# --- UPDATED /gradebook route ---
 @app.route('/gradebook')
 def gradebook():
     data = load_data()
@@ -585,73 +503,60 @@ def gradebook():
     all_classes = data.get('classes', [])
     all_students = data.get('students', [])
     all_grades = data.get('grades', {})
-
+    
     class_map = {c.get('id'): c for c in all_classes if isinstance(c, dict)}
-
+    
     assignment_options = []
     for a in all_assignments:
         if isinstance(a, dict):
-            a_copy = a.copy() # Operate on a copy
-            class_count = len(a.get('classIds', []))
-            # Keep the original title and add class count description separately if needed in template
-            a_copy['title_with_count'] = f"{a.get('title')} ({class_count} class{'es' if class_count != 1 else ''})"
-            # Add the classIds directly to the option data
-            a_copy['classIds'] = a.get('classIds', [])
+            class_info = class_map.get(a.get('classId'))
+            a_copy = a.copy()
+            if class_info:
+                a_copy['title'] = f"{a.get('title')} ({class_info.get('name')} - {class_info.get('section')})"
             assignment_options.append(a_copy)
-
+            
     assignment_options.sort(key=lambda x: x.get('dueDate', DEFAULT_DATE_SORT_KEY), reverse=True)
-
+    
     selected_assignment_id = request.args.get('assignment_id', '')
-    selected_class_id = request.args.get('class_id', '')
-
+    selected_class_id = request.args.get('class_id', '') # Keep class filter for flexibility
+    
     selected_assignment = None
     selected_class = None
     filtered_students = []
     student_scores = {}
-    relevant_classes_for_assignment = [] # For pre-populating class dropdown
-
+    
     if selected_assignment_id:
-        # Find the original assignment data to get totalPoints etc.
-        selected_assignment_details = next((a for a in all_assignments if a.get('id') == selected_assignment_id), None)
-        if selected_assignment_details:
-             # Create a copy for modification if needed for display, but keep original structure
-             selected_assignment = selected_assignment_details.copy()
-             # Get the list of classes for the selected assignment
-             relevant_class_ids = selected_assignment.get('classIds', [])
-             relevant_classes_for_assignment = [c for c in all_classes if c.get('id') in relevant_class_ids]
-
-
+        selected_assignment = next((a for a in all_assignments if a.get('id') == selected_assignment_id), None)
+    
+    # If a class is explicitly selected, use it. Otherwise, use the assignment's class.
     if selected_class_id:
         selected_class = next((c for c in all_classes if isinstance(c, dict) and c.get('id') == selected_class_id), None)
-
+    elif selected_assignment:
+        selected_class_id = selected_assignment.get('classId')
+        selected_class = class_map.get(selected_class_id)
+        
     if selected_assignment and selected_class:
-        # Check if the selected assignment is assigned to the selected class
-        if selected_class_id in selected_assignment.get('classIds', []):
+        # Check if the selected assignment belongs to the selected class
+        if selected_assignment.get('classId') == selected_class_id:
             filtered_students = [s for s in all_students if isinstance(s, dict) and s.get('classId') == selected_class_id]
             filtered_students.sort(key=lambda x: x.get('name', ''))
             student_scores = all_grades.get(selected_assignment_id, {})
             if not isinstance(student_scores, dict): student_scores = {}
         else:
             # Assignment doesn't match class, show empty
-            # Keep assignment selected, but clear class and students
-            selected_class = None
-            selected_class_id = '' # Clear selected class ID
+            selected_assignment = None 
             filtered_students = []
             student_scores = {}
-
-
+            
     return render_template('gradebook.html',
-                           assignment_options=assignment_options, # Pass updated options
-                           all_classes=all_classes, # Pass all classes for JS fallback
-                           relevant_classes=relevant_classes_for_assignment, # Pass relevant classes
+                           assignment_options=assignment_options,
+                           all_classes=all_classes,
                            selected_assignment_id=selected_assignment_id,
                            selected_class_id=selected_class_id,
-                           selected_assignment=selected_assignment, # This might be the detailed one now
+                           selected_assignment=selected_assignment,
                            selected_class=selected_class,
                            students=filtered_students,
                            scores=student_scores)
-
-# --- END UPDATED /gradebook route ---
 
 @app.route('/settings')
 def settings():
@@ -685,7 +590,6 @@ def class_view(class_id):
                            students=class_students,
                            available_campuses=available_campuses) # Pass campuses
 
-# --- UPDATED /student_profile route ---
 @app.route('/student/<student_id>')
 def student_profile(student_id):
     data = load_data()
@@ -706,9 +610,7 @@ def student_profile(student_id):
     for assignment in all_assignments:
         if not isinstance(assignment, dict) or 'id' not in assignment:
             continue
-        
-        # Check if student's class is in the assignment's list
-        if student.get('classId') in assignment.get('classIds', []):
+        if assignment.get('classId') == student.get('classId'):
             assignment_copy = assignment.copy()
             assignment_grades = all_grades.get(assignment['id'], {})
             if not isinstance(assignment_grades, dict):
@@ -716,7 +618,6 @@ def student_profile(student_id):
             student_score = assignment_grades.get(student_id)
             assignment_copy['score'] = student_score
             student_assignments_view.append(assignment_copy)
-            
     student_assignments_view.sort(key=lambda x: x.get('dueDate', DEFAULT_DATE_SORT_KEY))
     student['status'] = get_status_from_grade(student.get('overallGrade', 0))
     student['skills'] = student.get('skills', DEFAULT_SKILLS.copy()) # --- UPDATED ---
@@ -731,7 +632,6 @@ def student_profile(student_id):
                            class_data=student_class, 
                            all_classes=all_classes,
                            available_campuses=available_campuses) # Pass campuses
-# --- END UPDATED /student_profile route ---
 
 @app.route('/report/student/<student_id>')
 def student_report_html(student_id):
@@ -753,9 +653,7 @@ def student_report_html(student_id):
     for assignment in all_assignments:
         if not isinstance(assignment, dict) or 'id' not in assignment:
             continue
-        
-        # Check if student's class is in the assignment's list
-        if student.get('classId') in assignment.get('classIds', []):
+        if assignment.get('classId') == student.get('classId'):
             assignment_copy = assignment.copy()
             assignment_grades = all_grades.get(assignment['id'], {})
             if not isinstance(assignment_grades, dict):
@@ -763,7 +661,6 @@ def student_report_html(student_id):
             student_score = assignment_grades.get(student_id)
             assignment_copy['score'] = student_score
             student_assignments_view.append(assignment_copy)
-            
     student_assignments_view.sort(key=lambda x: x.get('dueDate', DEFAULT_DATE_SORT_KEY))
     student['status'] = get_status_from_grade(student.get('overallGrade', 0))
     student['skills'] = student.get('skills', DEFAULT_SKILLS.copy()) # --- UPDATED ---
@@ -792,9 +689,7 @@ def student_report_pdf(student_id):
     for assignment in all_assignments:
         if not isinstance(assignment, dict) or 'id' not in assignment:
             continue
-        
-        # Check if student's class is in the assignment's list
-        if student.get('classId') in assignment.get('classIds', []):
+        if assignment.get('classId') == student.get('classId'):
             assignment_copy = assignment.copy()
             assignment_grades = all_grades.get(assignment['id'], {})
             if not isinstance(assignment_grades, dict):
@@ -802,7 +697,6 @@ def student_report_pdf(student_id):
             student_score = assignment_grades.get(student_id)
             assignment_copy['score'] = student_score
             student_assignments_view.append(assignment_copy)
-            
     student_assignments_view.sort(key=lambda x: x.get('dueDate', DEFAULT_DATE_SORT_KEY))
     student['status'] = get_status_from_grade(student.get('overallGrade', 0))
     student['skills'] = student.get('skills', DEFAULT_SKILLS.copy()) # --- UPDATED ---
@@ -959,7 +853,6 @@ def update_assignment_grade():
     save_data(data)
     return jsonify({'success': True})
 
-# --- UPDATED /add_assignment route ---
 @app.route('/add_assignment', methods=['POST'])
 def add_assignment():
     data = load_data()
@@ -999,32 +892,34 @@ def add_assignment():
     if 'assignments' not in data or not isinstance(data['assignments'], list):
         data['assignments'] = []
     
-    # Create ONE master assignment
-    new_id_num = 1
-    existing_ids = {a.get('id') for a in data['assignments'] if isinstance(a, dict)}
-    while f"as{new_id_num}" in existing_ids:
-        new_id_num += 1
-    
-    new_assignment_id = f"as{new_id_num}"
-    new_assignment = {
-        'id': new_assignment_id,
-        'classIds': class_ids, # <-- Save the list of class IDs
-        'title': assignment_data['title'].strip(),
-        'dueDate': assignment_data['due_date'],
-        'totalPoints': total_points,
-        'type': assignment_data['type']
-    }
-    
-    data['assignments'].append(new_assignment)
+    # Create separate assignment for each selected class
+    created_assignments = []
+    for class_id in class_ids:
+        new_id_num = 1
+        existing_ids = {a.get('id') for a in data['assignments'] if isinstance(a, dict)}
+        while f"as{new_id_num}" in existing_ids:
+            new_id_num += 1
+        
+        new_assignment_id = f"as{new_id_num}"
+        new_assignment = {
+            'id': new_assignment_id,
+            'classId': class_id,
+            'title': assignment_data['title'].strip(),
+            'dueDate': assignment_data['due_date'],
+            'totalPoints': total_points,
+            'type': assignment_data['type']
+        }
+        
+        data['assignments'].append(new_assignment)
+        created_assignments.append(new_assignment_id)
     
     save_data(data)
-    print(f"Successfully added assignment: {new_assignment_id} for {len(class_ids)} classes")
+    print(f"Successfully added assignments: {created_assignments}")
     return jsonify({
         'success': True, 
-        'assignment_id': new_assignment_id, # Return single ID
-        'message': f'Assignment created for {len(class_ids)} classes'
+        'assignment_ids': created_assignments,
+        'message': f'Assignment created for {len(created_assignments)} classes'
     })
-# --- END UPDATED /add_assignment route ---
 
 # --- UPDATED add_student route ---
 @app.route('/add_student', methods=['POST'])
@@ -1129,28 +1024,11 @@ def edit_student(student_id):
     new_email = updated_data['email'].strip().lower()
     # Get new campus, fallback to old campus if not provided
     current_student = students_list[student_index]
+    new_campus = updated_data.get('campus', current_student.get('campus', DEFAULT_CAMPUS)).strip()
 
-    # --- FIX: Safely handle potential None before stripping ---
-    campus_value_from_request = updated_data.get('campus')
-    if campus_value_from_request is not None:
-        # If campus is provided in the request, use it (strip if it's a string)
-        new_campus = campus_value_from_request.strip() if isinstance(campus_value_from_request, str) else campus_value_from_request
-    else:
-        # If campus is NOT in the request, fall back to current student's campus or default
-        # No need to strip here as the stored value or default should already be clean
-        new_campus = current_student.get('campus', DEFAULT_CAMPUS)
-
-    # Ensure new_campus is not None before validation (it shouldn't be due to fallback)
-    if new_campus is None:
-        new_campus = DEFAULT_CAMPUS # Extra safety net
-
-    # Validate Campus (make sure it's a string now)
-    if not isinstance(new_campus, str) or new_campus not in CAMPUSES:
-         # If validation fails after handling None, default it
-         print(f"Warning: Invalid campus '{new_campus}' received during edit for student {student_id}. Defaulting to {DEFAULT_CAMPUS}.")
-         new_campus = DEFAULT_CAMPUS
-    # --- END FIX ---
-
+    # Validate Campus
+    if new_campus not in CAMPUSES:
+         return jsonify({'success': False, 'message': f"Invalid campus. Must be one of: {', '.join(CAMPUSES)}"}), 400
 
     # Check for duplicate UID and Roll Number (excluding current student)
     for student in students_list:
@@ -1303,29 +1181,21 @@ def delete_students_bulk():
         'not_found_ids': not_found_ids
     })
 
-# --- UPDATED /delete_assignment route ---
 @app.route('/delete_assignment', methods=['POST'])
 def delete_assignment():
     data = load_data()
     assignment_id = request.json.get('assignment_id')
     if not assignment_id:
         return jsonify({'success': False, 'message': 'Missing assignment ID'}), 400
-    
     initial_len = len(data.get('assignments', []))
-    # This logic is still correct. It finds the one master assignment and removes it.
     data['assignments'] = [a for a in data.get('assignments', []) if not (isinstance(a, dict) and a.get('id') == assignment_id)]
-    
-    # This logic is also still correct. It removes the entire gradebook for that master assignment.
     if assignment_id in data.get('grades', {}):
         del data['grades'][assignment_id]
-        
     if len(data.get('assignments', [])) < initial_len:
         save_data(data)
         return jsonify({'success': True, 'message': 'Assignment deleted'})
     else:
         return jsonify({'success': False, 'message': 'Assignment not found'}), 404
-# --- END UPDATED /delete_assignment route ---
-
 
 # --- UPDATED export_student_template route ---
 @app.route('/export/student_template_csv')
@@ -1567,4 +1437,3 @@ app.jinja_env.globals.update(get_status_from_grade=get_status_from_grade)
 if __name__ == '__main__':
     load_data()
     app.run(debug=True, host='0.0.0.0', port=5000)
-

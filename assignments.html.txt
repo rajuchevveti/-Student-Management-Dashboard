@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Robotics Academy - All Assignments{% endblock %}
+
+{% block page_title %}All Assignments{% endblock %}
+
+{% block page_subtitle %}Manage assignments across all classes{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+    <!-- Filter Section (Left) -->
+    <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative">
+            <i class="fas fa-search text-gray-400 absolute top-1/2 left-3 transform -translate-y-1/2"></i>
+            <input type="text" id="searchAssignments" placeholder="Search assignments..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-48">
+        </div>
+        <select id="classFilter" class="p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-auto">
+            <option value="all">All Classes</option>
+            {% for cls in all_classes | sort(attribute='name') %}
+            <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }}</option>
+            {% endfor %}
+        </select>
+        <select id="typeFilter" class="p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-auto">
+            <option value="all">All Types</option>
+             {% for type_option in assignment_types %}
+             <option value="{{ type_option }}">{{ type_option }}</option>
+             {% endfor %}
+        </select>
+    </div>
+
+    <!-- Action Buttons (Right) -->
+    <div class="flex space-x-3 w-full md:w-auto justify-end">
+         <button onclick="window.location.href='{{ url_for('dashboard') }}'"
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>Back
+        </button>
+        <button onclick="showAddAssignmentModal()"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center">
+            <i class="fas fa-plus mr-2"></i>New Assignment
+        </button>
+    </div>
+</div>
+
+<!-- Assignments Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 assignments-grid">
+    {% for assignment in assignments %}
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-200 p-5 assignment-row assignment-card" 
+         data-class-id="{{ assignment.classId }}" 
+         data-type="{{ assignment.type | lower }}" 
+         data-title="{{ assignment.title | lower }}"
+         data-class-name="{{ assignment.className | lower }}">
+        <div class="flex justify-between items-start mb-3">
+            <div>
+                <h3 class="text-md font-semibold text-gray-800 leading-tight">{{ assignment.title }}</h3>
+                <span class="text-xs font-medium px-2 py-0.5 rounded-full text-white {{ assignment.classColor | default('bg-gray-500') }} mt-1 inline-block">
+                    {{ assignment.className | default('Unknown Class') }}
+                </span>
+            </div>
+            <!-- More Actions Dropdown -->
+            <div class="relative">
+                 <button class="text-gray-400 hover:text-gray-600 focus:outline-none w-6 h-6 flex items-center justify-center rounded" onclick="toggleDropdown('{{ assignment.id }}')">
+                     <i class="fas fa-ellipsis-v"></i>
+                 </button>
+                 <div id="dropdown-{{ assignment.id }}" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-10" role="menu">
+                     <div class="py-1" role="none">
+                         <a href="#" onclick="viewAssignmentGrades('{{ assignment.id }}', '{{ assignment.classId }}'); return false;" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">View/Edit Grades</a>
+                         <a href="#" onclick="editAssignment('{{ assignment.id }}'); return false;" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Edit Details</a>
+                         <a href="#" onclick="deleteAssignment('{{ assignment.id }}'); return false;" class="text-red-600 block px-4 py-2 text-sm hover:bg-red-50" role="menuitem">Delete Assignment</a>
+                     </div>
+                 </div>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4 text-xs text-gray-500 mb-4">
+            <span class="flex items-center" title="Due Date">
+                <i class="far fa-calendar-alt mr-1.5"></i>
+                Due: {{ assignment.dueDate | default('N/A') }}
+            </span>
+            <span class="flex items-center" title="Total Points">
+                <i class="fas fa-star mr-1.5"></i>
+                {{ assignment.totalPoints | default('N/A') }} pts
+            </span>
+            <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                {{ assignment.type | default('Unknown') }}
+            </span>
+        </div>
+
+        <!-- Assignment Progress/Stats -->
+        <div>
+            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Avg. Grade {% if assignment.gradedCount > 0 %}({{ assignment.gradedCount }} graded){% endif %}</span>
+                <span class="font-medium text-gray-700">
+                    {% if assignment.averageGrade is not none %}
+                        {{ assignment.averageGrade }}%
+                    {% else %}
+                        Not Graded
+                    {% endif %}
+                </span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div class="bg-blue-500 h-1.5 rounded-full"
+                     style="width: {% if assignment.averageGrade is not none %}{{ assignment.averageGrade }}%{% else %}0%{% endif %}"></div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="md:col-span-2 lg:col-span-3 text-center py-16 bg-white rounded-xl shadow-md border border-gray-100">
+        <i class="fas fa-clipboard-list text-gray-300 text-5xl mb-4"></i>
+        <p class="text-gray-500 text-lg mb-4">No assignments created yet.</p>
+        <button onclick="showAddAssignmentModal()"
+                class="bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium inline-flex items-center">
+            <i class="fas fa-plus mr-2"></i>Create First Assignment
+        </button>
+    </div>
+    {% endfor %}
+</div>
+
+
+<!-- Add Assignment Modal -->
+<div id="addAssignmentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addAssignmentModalTitle" role="dialog" aria-modal="true">
+     <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addAssignmentDialog">
+        <form id="addAssignmentForm" onsubmit="return false;"> <!-- Added onsubmit to prevent default form submission -->
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-xl font-semibold text-gray-800" id="addAssignmentModalTitle">Add New Assignment</h3>
+                    <button type="button" onclick="closeAddAssignmentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                     
+                     <!-- === REPLACEMENT FOR CLASS SELECTION === -->
+                     <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-medium text-gray-700">Assign to Classes</label>
+                            <div class="space-x-2">
+                                <button type="button" onclick="selectAllClasses()" class="text-xs text-blue-600 hover:underline">All</button>
+                                <button type="button" onclick="deselectAllClasses()" class="text-xs text-blue-600 hover:underline">None</button>
+                            </div>
+                        </div>
+                        <div id="assignmentClassList" class="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3 space-y-2 bg-gray-50">
+                            {% for cls in all_classes | sort(attribute='name') %}
+                            <label class_id="{{ cls.id }}" for="class-check-{{ cls.id }}" class="flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer">
+                                <input type="checkbox" id="class-check-{{ cls.id }}" value="{{ cls.id }}" class="assignment-class-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-3 text-sm text-gray-700">{{ cls.name }} - {{ cls.section }}</span>
+                            </label>
+                            {% else %}
+                            <p class="text-sm text-gray-500">No classes found. Please add a class first.</p>
+                            {% endfor %}
+                        </div>
+                        <p id="classSelectionError" class="text-red-600 text-xs mt-1 hidden">Please select at least one class.</p>
+                    </div>
+                    <!-- === END REPLACEMENT === -->
+
+                    <div>
+                        <label for="assignmentTitle" class="block text-sm font-medium text-gray-700 mb-1">Assignment Title</label>
+                        <input type="text" id="assignmentTitle" name="title" required
+                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="assignmentDueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                            <input type="date" id="assignmentDueDate" name="due_date" required
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        </div>
+                         <div>
+                            <label for="assignmentPoints" class="block text-sm font-medium text-gray-700 mb-1">Total Points</label>
+                            <input type="number" id="assignmentPoints" name="total_points" required min="1" value="100"
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="assignmentType" class="block text-sm font-medium text-gray-700 mb-1">Type</f>
+                        <select id="assignmentType" name="type" required
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                             {% for type_option in assignment_types %}
+                             <option value="{{ type_option }}">{{ type_option }}</option>
+                             {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Actions -->
+             <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                <button type="button" onclick="closeAddAssignmentModal()"
+                        class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
+                     <i id="addAssignmentLoading" class="fas fa-spinner fa-spin mr-2 hidden"></i>
+                     <i id="addAssignmentIcon" class="fas fa-plus mr-2"></i>
+                     Create Assignment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# 
+   All necessary JS functions (toggleDropdown, closeDropdowns, 
+   initializeAssignmentFormListener, etc.) are already in your 
+   global 'script.js' file, which should be loaded by base.html.
+   
+   The 'initializeAssignmentsPage' function in script.js will
+   handle the filtering for this page.
+#}
+{% endblock %}

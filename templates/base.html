@@ -7,7 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link to style.css using url_for -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Add a container for toasts -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] w-64 space-y-2"></div>
 </head>
 <body class="bg-gray-50">
     <!-- Overlay for mobile sidebar (used when screen is small) -->
@@ -18,10 +21,21 @@
         <!-- Start collapsed (or remove 'collapsed' to start open by default) -->
         <div id="sidebar" class="sidebar collapsed">
             <!-- Logo Area -->
+            <!-- Logo Area -->
             <div class="sidebar-logo">
-                <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content">
-                    <i class="fas fa-robot text-2xl text-blue-300 logo-icon"></i>
-                    <span class="logo-text">Robotics Academy</span>
+                <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content items-center"> <!-- Added items-center for vertical alignment -->
+                    <!-- Replace Robot Icon with your Logo Image -->
+                    
+                    <!-- **** FIX 1: Changed 'kos_logo.PNG' to 'kos_logo.png' (lowercase) **** -->
+                    <!-- **** FIX 2: Added 'logo-image' class for CSS targeting **** -->
+                    <img src="{{ url_for('static', filename='kos_logo.png') }}" alt="KOS Logo" class="h-8 w-auto mr-2 logo-image"> <!-- Adjust h-8 (height) and mr-2 (margin) as needed -->
+
+                    <!-- Container for Text Lines -->
+                    <!-- **** FIX 3: Added 'logo-text-container' for CSS targeting **** -->
+                    <div class="flex flex-col logo-text-container">
+                        <span class="logo-text font-bold text-lg leading-tight">K O S</span> <!-- Main Title: KOS -->
+                        <span class="logo-subtitle text-xs text-blue-200 leading-tight block">Kakatiya Olympiad School</span> <!-- Subtitle -->
+                    </div>
                 </a>
             </div>
 
@@ -41,10 +55,14 @@
                             <i class="fas fa-clipboard-list"></i>
                             <span class="nav-text">Assignments</span>
                         </a>
-                        {# --- UPDATED Link: Assessments -> Gradebook --- #}
+                        {# --- Link: Gradebook --- #}
                         <a href="{{ url_for('gradebook') }}" class="nav-item {% if request.endpoint == 'gradebook' %}active{% endif %}" data-tooltip="Gradebook">
                             <i class="fas fa-edit"></i> {# Changed icon #}
                             <span class="nav-text">Gradebook</span>
+                        </a>
+                         <a href="#" id="manageClassesButton" class="nav-item" data-tooltip="Manage Classes">
+                            <i class="fas fa-school"></i>
+                            <span class="nav-text">Manage Classes</span>
                         </a>
                         <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}" data-tooltip="Settings">
                             <i class="fas fa-cog"></i>
@@ -78,21 +96,33 @@
                         <i id="toggleIcon" class="fas fa-bars"></i> <!-- Icon changes via JS -->
                     </button>
                     <div class="header-title">
-                        <h1 class="text-3xl font-bold text-gray-800">{% block page_title %}Student Management Dashboard{% endblock %}</h1>
-                        <p class="text-gray-600">{% block page_subtitle %}Monitor robotics students across all grades and sections{% endblock %}</p>
+                        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">{% block page_title %}Student Management Dashboard{% endblock %}</h1>
+                        <p class="text-sm text-gray-600 hidden md:block">{% block page_subtitle %}Monitor robotics students across all grades and sections{% endblock %}</p>
                     </div>
                 </div>
-                <div class="header-right">
+                 <div class="header-right">
+                    <!-- Student Search (Moved Here) -->
+                    <div class="relative hidden md:block">
+                        <input type="text" id="studentSearch" placeholder="Search students..."
+                               class="pl-8 pr-4 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 lg:w-64">
+                        <i class="fas fa-search text-gray-400 absolute top-1/2 left-2.5 transform -translate-y-1/2 text-xs"></i>
+                        <!-- Search Results Dropdown -->
+                        <div id="searchResults" class="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 hidden max-h-60 overflow-y-auto">
+                            <!-- Results populated by script.js -->
+                        </div>
+                    </div>
+
                     <!-- Notification Bell -->
                     <button class="notification-btn" aria-label="View notifications">
                         <i class="fas fa-bell"></i>
                         <span class="notification-dot"></span>
                     </button>
 
-                    <!-- User Profile -->
+                    <!-- User Profile Dropdown Placeholder -->
                     <div class="user-profile">
                         <i class="fas fa-user text-gray-700"></i>
-                        <span class="font-medium text-gray-800">Admin User</span>
+                        <span class="font-medium text-gray-800 hidden sm:inline">Admin User</span>
+                        <!-- Dropdown arrow could go here if needed -->
                     </div>
                 </div>
             </header>
@@ -105,11 +135,508 @@
         </div>
     </div>
 
+    <!-- --- GLOBAL MODALS --- -->
+    <!-- These modals are defined here in base.html so they are available on ALL pages -->
+
+    <!-- Modal 1: Manage Classes -->
+    <div id="manage-classes-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="manageClassesModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="manageClassesDialog">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800" id="manageClassesModalTitle">Manage Classes</h3>
+                <button type="button" onclick="closeManageClassesModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <!-- Content (Scrollable) -->
+            <div id="classes-list" class="p-6 flex-1 overflow-y-auto space-y-3">
+                <!-- Class list will be populated here by script.js -->
+                <p class="p-4 text-center text-gray-500 text-sm">Loading classes...</p>
+            </div>
+            <!-- Footer -->
+            <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                <button type="button" onclick="closeManageClassesModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                    Close
+                </button>
+                <button type="button" id="add-class-btn" onclick="showAddClassModal()" class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors inline-flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Add New Class
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Add/Edit Class Form -->
+    <div id="class-form-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="class-form-title" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="classFormDialog">
+            <form id="class-form" class="flex flex-col flex-1 overflow-hidden">
+                <!-- Header -->
+                <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800" id="class-form-title">Add Class</h3>
+                    <button type="button" onclick="closeClassFormModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <!-- Content (Scrollable) -->
+                <div class="p-6 flex-1 overflow-y-auto space-y-4">
+                    <input type="hidden" id="class-id" name="class-id">
+                    <div>
+                        <label for="class-name" class="block text-sm font-medium text-gray-700 mb-1">Class Name *</label>
+                        <input type="text" id="class-name" name="name" required placeholder="e.g., Grade 6th" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label for="class-section" class="block text-sm font-medium text-gray-700 mb-1">Section *</label>
+                        <input type="text" id="class-section" name="section" required placeholder="e.g., Tata" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label for="class-campus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
+                         <!-- UPDATED: Use select dropdown for campus -->
+                         <select id="class-campus" name="campus" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                             <option value="" disabled selected>Select Campus</option>
+                             {% for campus_option in ALL_CAMPUSES %}
+                             <option value="{{ campus_option }}">{{ campus_option }}</option>
+                             {% endfor %}
+                         </select>
+                    </div>
+                    <!-- Visual Color Picker -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Color *</label>
+                        <!-- Hidden input stores the selected Tailwind class -->
+                        <input type="hidden" id="class-color" name="color">
+                        <div class="flex flex-wrap gap-3">
+                             <!-- Generate radio buttons for colors -->
+                             {% set colors = {'Blue': 'bg-blue-500', 'Green': 'bg-green-500', 'Red': 'bg-red-500', 'Purple': 'bg-purple-500', 'Sky': 'bg-sky-500', 'Amber': 'bg-amber-500', 'Teal': 'bg-teal-500', 'Gray': 'bg-gray-500'} %}
+                             {% for name, bg_class in colors.items() %}
+                             <label class="flex items-center space-x-2 cursor-pointer p-1">
+                                 <!-- The radio button itself -->
+                                 <input type="radio" name="color_option" value="{{ bg_class }}" class="hidden peer" data-color-target="class-color">
+                                 <!-- The visual swatch -->
+                                 <span class="w-6 h-6 {{ bg_class }} rounded-full border-2 border-white ring-2 ring-transparent peer-checked:ring-offset-1 peer-checked:ring-blue-600 transition-all duration-150"></span>
+                                 <!-- Optional: Text label for the color -->
+                                 {# <span class="text-sm text-gray-700">{{ name }}</span> #}
+                             </label>
+                             {% endfor %}
+                        </div>
+                    </div>
+                    <p id="class-form-error" class="hidden text-sm text-red-600 mt-2"></p>
+                </div>
+                <!-- Footer -->
+                <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                    <button type="button" onclick="closeClassFormModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
+                        Save Class <!-- Text changes dynamically -->
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+     <!-- Add Student Modal -->
+    <div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addStudentModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="addStudentDialog">
+            <form id="addStudentForm" class="flex flex-col flex-1 overflow-hidden">
+                <!-- Header -->
+                <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800" id="addStudentModalTitle">Add New Student</h3>
+                    <button type="button" onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close add student modal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Content (Scrollable) -->
+                <div class="p-6 flex-1 overflow-y-auto space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                            <input type="text" id="studentName" name="name" required
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   aria-required="true">
+                        </div>
+                        <div>
+                            <label for="studentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                            <input type="email" id="studentEmail" name="email" required
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   aria-required="true">
+                        </div>
+                    </div>
+
+                    <!-- UID and Roll Number -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="studentUid" class="block text-sm font-medium text-gray-700 mb-1">UID *</label>
+                            <input type="text" id="studentUid" name="uid" required
+                                   placeholder="e.g., KYC041JO"
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   aria-required="true">
+                            <p id="addUidDuplicateError" class="hidden text-xs text-red-600 mt-1">UID already exists</p>
+                        </div>
+                        <div>
+                            <label for="studentRollNumber" class="block text-sm font-medium text-gray-700 mb-1">Roll Number *</label>
+                            <input type="text" id="studentRollNumber" name="rollNumber" required
+                                   placeholder="e.g., ROLL101"
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   aria-required="true">
+                             <p id="addRollNumberDuplicateError" class="hidden text-xs text-red-600 mt-1">Roll Number already exists</p>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <label for="addStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                         <!-- UPDATED ID to match JS -->
+                        <select id="addStudentClass" name="classId" required
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                aria-required="true">
+                            <option value="" disabled selected>Loading classes...</option>
+                            <!-- Options populated by showAddStudentModal in script.js -->
+                        </select>
+                        <span id="studentClassLoading" class="hidden absolute right-3 top-10 text-gray-400">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </div>
+
+                    <!-- Campus Dropdown -->
+                    <div>
+                        <label for="addStudentCampus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
+                         <!-- UPDATED ID and name -->
+                        <select id="addStudentCampus" name="campus" required
+                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                aria-required="true">
+                            <option value="" disabled selected>Select a campus...</option>
+                            {% for campus_option in ALL_CAMPUSES %}
+                            <option value="{{ campus_option }}">{{ campus_option }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="addStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                         <!-- UPDATED ID -->
+                        <input type="tel" id="addStudentParentPhone" name="parentPhone"
+                               placeholder="+91 XXXXXXXXXX"
+                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                               aria-describedby="phoneFormatHint">
+                        <p id="phoneFormatHint" class="text-xs text-gray-500 mt-1">Format: +91 XXXXXXXXXX</p>
+                    </div>
+                     <p id="addStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
+                    <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                    <button type="button" onclick="closeAddStudentModal()"
+                            class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        <span>Add Student</span>
+                        <i class="fas fa-spinner fa-spin ml-2 hidden" id="addStudentLoading"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal (Structure - Content loaded by JS) -->
+    <div id="editStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="editStudentModalTitle" role="dialog" aria-modal="true">
+         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="editStudentDialog">
+            <form id="editStudentForm" data-student-id="" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 flex-1 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-xl font-semibold text-gray-800" id="editStudentModalTitle">Edit Student</h3>
+                        <button type="button" onclick="closeEditStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="editStudentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" id="editStudentName" name="name" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            </div>
+                            <div>
+                                <label for="editStudentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" id="editStudentEmail" name="email" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="editStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                            <select id="editStudentClass" name="classId" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <option value="" disabled>Loading classes...</option>
+                                <!-- Options populated by showEditStudentModal in script.js -->
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <div>
+                                <label for="editStudentUid" class="block text-sm font-medium text-gray-700 mb-1">UID *</label>
+                                <input type="text" id="editStudentUid" name="uid" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <p id="uidDuplicateError" class="hidden text-xs text-red-600 mt-1">UID already exists</p>
+                            </div>
+                            <div>
+                                <label for="editStudentRollNumber" class="block text-sm font-medium text-gray-700 mb-1">Roll Number *</label>
+                                <input type="text" id="editStudentRollNumber" name="rollNumber" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <p id="rollNumberDuplicateError" class="hidden text-xs text-red-600 mt-1">Roll Number already exists</p>
+                            </div>
+                         </div>
+                         <!-- Campus Dropdown -->
+                        <div>
+                            <label for="editStudentCampus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
+                             <!-- UPDATED ID and name -->
+                            <select id="editStudentCampus" name="campus" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <option value="" disabled>Select Campus</option>
+                                {% for campus_option in ALL_CAMPUSES %}
+                                <option value="{{ campus_option }}">{{ campus_option }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                         <div>
+                            <label for="editStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                            <input type="tel" id="editStudentParentPhone" name="parentPhone" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        </div>
+                        <!-- Skill Sliders -->
+                        <div class="mt-4 pt-4 border-t">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3">Skill Ratings (1-5)</h4>
+                            <div class="space-y-3" id="skillRatingInputs">
+                                {% for skill_name in DEFAULT_SKILLS %}
+                                 {# Generate unique IDs based on skill name and 'Edit' context #}
+                                {% set clean_skill_name = skill_name.replace(' ', '_').replace('&', 'and') %}
+                                {% set input_id = "skillRatingEdit-" ~ clean_skill_name %}
+                                {% set value_id = "skillValueEdit-" ~ clean_skill_name %}
+                                <div>
+                                    <label for="{{ input_id }}" class="block text-sm font-medium text-gray-700 mb-1">{{ skill_name }}</label>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="range" id="{{ input_id }}"
+                                               min="1" max="5" step="1" value="1" {# Default value 1 #}
+                                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 skill-slider"
+                                               data-skill-name="{{ skill_name }}" {# Use original skill name for JS #}
+                                               oninput="document.getElementById('{{ value_id }}').textContent = this.value">
+                                        <span id="{{ value_id }}" class="text-sm font-medium text-gray-700 w-4 text-center">1</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+                     <p id="editStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
+                </div>
+                 <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                     <button type="button" onclick="deleteStudent(document.getElementById('editStudentForm').dataset.studentId)"
+                             class="px-5 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 hover:border-red-400 transition-colors inline-flex items-center">
+                         <i class="fas fa-trash-alt mr-2"></i>Delete Student
+                     </button>
+                     <div class="space-x-3">
+                         <button type="button" onclick="closeEditStudentModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">Cancel</button>
+                         <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50">
+                             <i class="fas fa-save mr-2"></i>Save Changes
+                             <i class="fas fa-spinner fa-spin ml-2 hidden" id="editStudentLoading"></i>
+                         </button>
+                     </div>
+                 </div>
+            </form>
+        </div>
+    </div>
+
+     <!-- Import Students Modal -->
+     <div id="importStudentsModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="importStudentsModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="importStudentsDialog">
+             <form id="importStudentsForm" enctype="multipart/form-data">
+                 <div class="p-6">
+                     <div class="flex justify-between items-center mb-5">
+                         <h3 class="text-xl font-semibold text-gray-800" id="importStudentsModalTitle">Import Students via CSV</h3>
+                         <button type="button" onclick="closeImportStudentsModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close import students modal">
+                             <i class="fas fa-times text-xl"></i>
+                         </button>
+                     </div>
+                     <div class="space-y-4">
+                         <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                             <h4 class="font-semibold text-blue-800 mb-2">Step 1: Download Template</h4>
+                             <p class="text-sm text-blue-700 mb-3">Download the template CSV and fill it with student data. Ensure 'Class Name', 'Section', and 'Campus' match existing classes exactly (case-insensitive). Use unique UIDs and emails.</p>
+                             <a href="{{ url_for('export_student_template') }}"
+                                class="inline-flex items-center px-4 py-2 bg-white text-blue-700 border border-blue-300 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
+                                 <i class="fas fa-download mr-2"></i>Download Template
+                             </a>
+                         </div>
+                         <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                             <h4 class="font-semibold text-green-800 mb-2">Step 2: Upload Completed File</h4>
+                             <p class="text-sm text-green-700 mb-3">Upload the completed CSV. The system checks for duplicate UIDs and emails. Invalid rows will be skipped.</p>
+                             <div>
+                                 <label for="studentCsvFile" class="block text-sm font-medium text-gray-700 mb-1">CSV File *</label>
+
+                                 <label class="w-full flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                     <i class="fas fa-file-csv text-green-600 mr-3 text-lg"></i>
+                                     <span id="csvFileName" class="text-sm text-gray-400">No file chosen</span>
+                                     <input type="file" id="studentCsvFile" name="student_csv" required accept=".csv, text/csv" class="hidden"
+                                            aria-required="true">
+                                 </label>
+                                  <p id="importError" class="hidden text-xs text-red-600 mt-1"></p>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                     <button type="button" onclick="closeImportStudentsModal()"
+                             class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                         Cancel
+                     </button>
+                     <button type="submit"
+                             class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                         <i class="fas fa-file-upload mr-2"></i>
+                         <span>Upload and Import</span>
+                         <i class="fas fa-spinner fa-spin ml-2 hidden" id="importStudentsLoading"></i>
+                     </button>
+                 </div>
+             </form>
+        </div>
+    </div>
+
+    <!-- Reset Data Confirmation Modal -->
+    <div id="resetModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="resetModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="resetDialog">
+             <div class="p-6">
+                 <div class="flex items-start">
+                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                     </div>
+                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                         <h3 class="text-lg leading-6 font-medium text-gray-900" id="resetModalTitle">
+                             Reset All Data?
+                         </h3>
+                         <div class="mt-2">
+                             <p class="text-sm text-gray-500">
+                                 Are you sure you want to reset all application data (students, classes, assignments, grades)? This action cannot be undone and will restore the initial default data.
+                             </p>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl">
+                 <button type="button" id="confirmReset"
+                         class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                     Yes, Reset Data
+                 </button>
+                 <button type="button" onclick="hideResetConfirmation()"
+                         class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                     Cancel
+                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- **** ADDED Add Assignment Modal **** -->
+    <div id="addAssignmentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addAssignmentModalTitle" role="dialog" aria-modal="true">
+         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addAssignmentDialog">
+            <form id="addAssignmentForm" onsubmit="return false;">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-xl font-semibold text-gray-800" id="addAssignmentModalTitle">Add New Assignment</h3>
+                        <button type="button" onclick="closeAddAssignmentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                         <!-- Class Selection Checkboxes -->
+                         <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-sm font-medium text-gray-700">Assign to Classes *</label>
+                                <div class="space-x-2">
+                                    <button type="button" onclick="selectAllClasses()" class="text-xs text-blue-600 hover:underline">All</button>
+                                    <button type="button" onclick="deselectAllClasses()" class="text-xs text-blue-600 hover:underline">None</button>
+                                </div>
+                            </div>
+                            <div id="assignmentClassList" class="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3 space-y-2 bg-gray-50">
+                                <!-- Checkboxes populated by script.js's refreshAssignmentClassCheckboxes -->
+                                <p class="text-sm text-gray-500">Loading classes...</p>
+                            </div>
+                            <p id="classSelectionError" class="text-red-600 text-xs mt-1 hidden">Please select at least one class.</p>
+                        </div>
+
+                        <div>
+                            <label for="assignmentTitle" class="block text-sm font-medium text-gray-700 mb-1">Assignment Title *</label>
+                            <input type="text" id="assignmentTitle" name="title" required
+                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="assignmentDueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date *</label>
+                                <input type="date" id="assignmentDueDate" name="due_date" required
+                                       class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                            </div>
+                             <div>
+                                <label for="assignmentPoints" class="block text-sm font-medium text-gray-700 mb-1">Total Points *</label>
+                                <input type="number" id="assignmentPoints" name="total_points" required min="1" value="100"
+                                       class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="assignmentType" class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+                            <select id="assignmentType" name="type" required
+                                    class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                <!-- Use assignment_types from Flask context if available -->
+                                {% for type_option in assignment_types %}
+                                <option value="{{ type_option }}">{{ type_option }}</option>
+                                {% else %}
+                                 <!-- Fallback if not passed -->
+                                <option value="Homework">Homework</option>
+                                <option value="Quiz">Quiz</option>
+                                <option value="Project">Project</option>
+                                <option value="Lab">Lab</option>
+                                <option value="Exam">Exam</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                         <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+                    </div>
+                </div>
+                <!-- Footer Actions -->
+                 <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                    <button type="button" onclick="closeAddAssignmentModal()"
+                            class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
+                         <!-- Icons handled by setLoadingState -->
+                         <span>Create Assignment</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+     <!-- **** END Add Assignment Modal **** -->
+
+
+    <!-- --- END Global Modals --- -->
+
+
     <!-- Link to external JavaScript -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     <!-- Page-specific JavaScript -->
     {% block scripts %}{% endblock %}
+
+    <!-- Fallback for showToast if not defined in script.js -->
+    <script>
+        // Ensure showToast exists globally, provide fallback if needed
+        if (typeof window.showToast === 'undefined') {
+            window.showToast = function(message, type = 'info') {
+                console.warn("showToast fallback:", type.toUpperCase(), message);
+                // Simple alert fallback (consider a better inline fallback if needed)
+                // alert(`${type.toUpperCase()}: ${message}`);
+            };
+        }
+        // Ensure necessary functions exist if script.js fails to load
+         if (typeof window.showAddAssignmentModal === 'undefined') {
+             window.showAddAssignmentModal = () => showToast('Error: Add Assignment function not loaded.', 'error');
+         }
+         if (typeof window.closeAddAssignmentModal === 'undefined') {
+             window.closeAddAssignmentModal = () => console.error('closeAddAssignmentModal not loaded');
+         }
+         // Add fallbacks for other modal functions if needed...
+
+    </script>
 </body>
 </html>
+
 

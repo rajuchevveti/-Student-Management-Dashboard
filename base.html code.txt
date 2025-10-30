@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Robotics Academy{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link to style.css using url_for -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Add a container for toasts -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] w-64 space-y-2"></div>
+</head>
+<body class="bg-gray-50">
+    <!-- Overlay for mobile sidebar (used when screen is small) -->
+    <div id="overlay" class="overlay"></div>
+
+    <div class="flex"> <!-- Use flex container for sidebar + main content -->
+        <!-- Sidebar -->
+        <!-- Start collapsed (or remove 'collapsed' to start open by default) -->
+        <div id="sidebar" class="sidebar collapsed">
+            <!-- Logo Area -->
+            <div class="sidebar-logo">
+                <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content">
+                    <i class="fas fa-robot text-2xl text-blue-300 logo-icon"></i>
+                    <span class="logo-text">Robotics Academy</span>
+                </a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="sidebar-content">
+                <nav class="nav-section">
+                    <div class="nav-items">
+                        <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}" data-tooltip="Dashboard">
+                            <i class="fas fa-chart-bar"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                        <a href="{{ url_for('students') }}" class="nav-item {% if request.endpoint == 'students' %}active{% endif %}" data-tooltip="All Students">
+                            <i class="fas fa-users"></i>
+                            <span class="nav-text">All Students</span>
+                        </a>
+                        <a href="{{ url_for('assignments') }}" class="nav-item {% if request.endpoint == 'assignments' %}active{% endif %}" data-tooltip="Assignments">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span class="nav-text">Assignments</span>
+                        </a>
+                        {# --- Link: Gradebook --- #}
+                        <a href="{{ url_for('gradebook') }}" class="nav-item {% if request.endpoint == 'gradebook' %}active{% endif %}" data-tooltip="Gradebook">
+                            <i class="fas fa-edit"></i> {# Changed icon #}
+                            <span class="nav-text">Gradebook</span>
+                        </a>
+                         <a href="#" id="manageClassesButton" class="nav-item" data-tooltip="Manage Classes">
+                            <i class="fas fa-school"></i>
+                            <span class="nav-text">Manage Classes</span>
+                        </a>
+                        <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}" data-tooltip="Settings">
+                            <i class="fas fa-cog"></i>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                    </div>
+                </nav>
+
+                <!-- User Profile Section -->
+                <div class="admin-user">
+                    <a href="#" class="admin-link">
+                        <div class="admin-avatar">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                        <div class="admin-info">
+                            <span class="admin-name">Admin User</span>
+                            <span class="admin-role">Administrator</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <!-- Hamburger Toggle Button -->
+                    <button id="sidebarToggle" class="hamburger-toggle-btn">
+                        <i id="toggleIcon" class="fas fa-bars"></i> <!-- Icon changes via JS -->
+                    </button>
+                    <div class="header-title">
+                        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">{% block page_title %}Student Management Dashboard{% endblock %}</h1>
+                        <p class="text-sm text-gray-600 hidden md:block">{% block page_subtitle %}Monitor robotics students across all grades and sections{% endblock %}</p>
+                    </div>
+                </div>
+                 <div class="header-right">
+                    <!-- Student Search (Moved Here) -->
+                    <div class="relative hidden md:block">
+                        <input type="text" id="studentSearch" placeholder="Search students..."
+                               class="pl-8 pr-4 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 lg:w-64">
+                        <i class="fas fa-search text-gray-400 absolute top-1/2 left-2.5 transform -translate-y-1/2 text-xs"></i>
+                        <!-- Search Results Dropdown -->
+                        <div id="searchResults" class="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 hidden max-h-60 overflow-y-auto">
+                            <!-- Results populated by script.js -->
+                        </div>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <button class="notification-btn" aria-label="View notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <!-- User Profile Dropdown Placeholder -->
+                    <div class="user-profile">
+                        <i class="fas fa-user text-gray-700"></i>
+                        <span class="font-medium text-gray-800 hidden sm:inline">Admin User</span>
+                        <!-- Dropdown arrow could go here if needed -->
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content Area -->
+            <main class="content-area">
+                {% block content %}{% endblock %}
+            </main>
+
+        </div>
+    </div>
+
+    <!-- --- GLOBAL MODALS --- -->
+    <!-- These modals are defined here in base.html so they are available on ALL pages -->
+
+    <!-- Modal 1: Manage Classes -->
+    <div id="manage-classes-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="manageClassesModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="manageClassesDialog">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800" id="manageClassesModalTitle">Manage Classes</h3>
+                <button type="button" onclick="closeManageClassesModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <!-- Content (Scrollable) -->
+            <div id="classes-list" class="p-6 flex-1 overflow-y-auto space-y-3">
+                <!-- Class list will be populated here by script.js -->
+                <p class="p-4 text-center text-gray-500 text-sm">Loading classes...</p>
+            </div>
+            <!-- Footer -->
+            <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                <button type="button" onclick="closeManageClassesModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                    Close
+                </button>
+                <button type="button" id="add-class-btn" onclick="showAddClassModal()" class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors inline-flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Add New Class
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Add/Edit Class Form -->
+    <div id="class-form-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="class-form-title" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="classFormDialog">
+            <form id="class-form" class="flex flex-col flex-1 overflow-hidden">
+                <!-- Header -->
+                <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800" id="class-form-title">Add Class</h3>
+                    <button type="button" onclick="closeClassFormModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <!-- Content (Scrollable) -->
+                <div class="p-6 flex-1 overflow-y-auto space-y-4">
+                    <input type="hidden" id="class-id" name="class-id">
+                    <div>
+                        <label for="class-name" class="block text-sm font-medium text-gray-700 mb-1">Class Name *</label>
+                        <input type="text" id="class-name" name="name" required placeholder="e.g., Grade 6th" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label for="class-section" class="block text-sm font-medium text-gray-700 mb-1">Section *</label>
+                        <input type="text" id="class-section" name="section" required placeholder="e.g., Tata" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                    <div>
+                        <label for="class-campus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
+                        <input type="text" id="class-campus" name="campus" required value="Main Campus" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                    <!-- Visual Color Picker -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Color *</label>
+                        <!-- Hidden input stores the selected Tailwind class -->
+                        <input type="hidden" id="class-color" name="color">
+                        <div class="flex flex-wrap gap-3">
+                             <!-- Generate radio buttons for colors -->
+                             {% set colors = {'Blue': 'bg-blue-500', 'Green': 'bg-green-500', 'Red': 'bg-red-500', 'Purple': 'bg-purple-500', 'Sky': 'bg-sky-500', 'Amber': 'bg-amber-500', 'Teal': 'bg-teal-500', 'Gray': 'bg-gray-500'} %}
+                             {% for name, bg_class in colors.items() %}
+                             <label class="flex items-center space-x-2 cursor-pointer p-1">
+                                 <!-- The radio button itself -->
+                                 <input type="radio" name="color_option" value="{{ bg_class }}" class="hidden peer" data-color-target="class-color">
+                                 <!-- The visual swatch -->
+                                 <span class="w-6 h-6 {{ bg_class }} rounded-full border-2 border-white ring-2 ring-transparent peer-checked:ring-offset-1 peer-checked:ring-blue-600 transition-all duration-150"></span>
+                                 <!-- Optional: Text label for the color -->
+                                 {# <span class="text-sm text-gray-700">{{ name }}</span> #}
+                             </label>
+                             {% endfor %}
+                        </div>
+                    </div>
+                    <p id="class-form-error" class="hidden text-sm text-red-600 mt-2"></p>
+                </div>
+                <!-- Footer -->
+                <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                    <button type="button" onclick="closeClassFormModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
+                        Save Class <!-- Text changes dynamically -->
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+     <!-- Add Student Modal -->
+    <div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addStudentModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addStudentDialog">
+            <form id="addStudentForm">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-xl font-semibold text-gray-800" id="addStudentModalTitle">Add New Student</h3>
+                        <button type="button" onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="addStudentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" id="addStudentName" name="name" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            </div>
+                            <div>
+                                <label for="addStudentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" id="addStudentEmail" name="email" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="addStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                            <select id="addStudentClass" name="classId" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <option value="" disabled selected>-- Select a class --</option>
+                                {# Options loaded by JS or passed from Flask #}
+                            </select>
+                        </div>
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="addStudentUid" class="block text-sm font-medium text-gray-700 mb-1">UID *</label>
+                                <input type="text" id="addStudentUid" name="uid" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <p id="addUidDuplicateError" class="hidden text-xs text-red-600 mt-1">UID already exists</p>
+                            </div>
+                            <div>
+                                <label for="addStudentRollNumber" class="block text-sm font-medium text-gray-700 mb-1">Roll Number *</label>
+                                <input type="text" id="addStudentRollNumber" name="rollNumber" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <p id="addRollNumberDuplicateError" class="hidden text-xs text-red-600 mt-1">Roll Number already exists</p>
+                            </div>
+                         </div>
+                         <div>
+                            <label for="addStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                            <input type="tel" id="addStudentParentPhone" name="parentPhone" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        </div>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+                     <p id="addStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
+                </div>
+                <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                    <button type="button" onclick="closeAddStudentModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal (Structure - Content loaded by JS) -->
+    <div id="editStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="editStudentModalTitle" role="dialog" aria-modal="true">
+         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="editStudentDialog">
+            <form id="editStudentForm" data-student-id="" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 flex-1 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-xl font-semibold text-gray-800" id="editStudentModalTitle">Edit Student</h3>
+                        <button type="button" onclick="closeEditStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="editStudentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" id="editStudentName" name="name" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            </div>
+                            <div>
+                                <label for="editStudentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" id="editStudentEmail" name="email" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="editStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
+                            <select id="editStudentClass" name="classId" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <option value="" disabled>-- Select a class --</option>
+                                {# Options loaded by JS #}
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <div>
+                                <label for="editStudentUid" class="block text-sm font-medium text-gray-700 mb-1">UID *</label>
+                                <input type="text" id="editStudentUid" name="uid" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <p id="uidDuplicateError" class="hidden text-xs text-red-600 mt-1">UID already exists</p>
+                            </div>
+                            <div>
+                                <label for="editStudentRollNumber" class="block text-sm font-medium text-gray-700 mb-1">Roll Number *</label>
+                                <input type="text" id="editStudentRollNumber" name="rollNumber" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                <p id="rollNumberDuplicateError" class="hidden text-xs text-red-600 mt-1">Roll Number already exists</p>
+                            </div>
+                         </div>
+                         <div>
+                            <label for="editStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                            <input type="tel" id="editStudentParentPhone" name="parentPhone" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        </div>
+                        <!-- Skill Sliders (if applicable on the page where modal is used) -->
+                        {% if request.endpoint == 'student_profile' %}
+                        <div class="mt-4 pt-4 border-t">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3">Skill Ratings (0-5)</h4>
+                            <div class="space-y-3" id="skillRatingInputs">
+                                {% for skill_name in DEFAULT_SKILLS %}
+                                {% set input_id = "skillRating-" ~ skill_name.replace(' ', '_').replace('&', 'and') %}
+                                {% set value_id = "skillValue-" ~ skill_name.replace(' ', '_').replace('&', 'and') %}
+                                <div>
+                                    <label for="{{ input_id }}" class="block text-sm font-medium text-gray-700 mb-1">{{ skill_name }}</label>
+                                    <div class="flex items-center space-x-3">
+                                        <input type="range" id="{{ input_id }}" name="skills[{{ skill_name }}]"
+                                               min="0" max="5" step="1" value="1"
+                                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 skill-slider"
+                                               data-skill-name="{{ skill_name }}"
+                                               oninput="document.getElementById('{{ value_id }}').textContent = this.value">
+                                        <span id="{{ value_id }}" class="text-sm font-medium text-gray-700 w-4 text-center">1</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4">* Required fields</p>
+                     <p id="editStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
+                </div>
+                 <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                     <button type="button" onclick="deleteStudent(document.getElementById('editStudentForm').dataset.studentId)"
+                             class="px-5 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 hover:border-red-400 transition-colors inline-flex items-center">
+                         <i class="fas fa-trash-alt mr-2"></i>Delete Student
+                     </button>
+                     <div class="space-x-3">
+                        <button type="button" onclick="closeEditStudentModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">Cancel</button>
+                        <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                             <i class="fas fa-spinner fa-spin ml-2 hidden" id="editStudentLoading"></i>
+                        </button>
+                     </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+     <!-- Import Students Modal -->
+     <div id="importStudentsModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="importStudentsModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="importStudentsDialog">
+            <form id="importStudentsForm" enctype="multipart/form-data">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-xl font-semibold text-gray-800" id="importStudentsModalTitle">Import Students from CSV</h3>
+                        <button type="button" onclick="closeImportStudentsModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <div class="space-y-4">
+                         <p class="text-sm text-gray-600">Upload a CSV file with student data. Make sure it follows the template format.</p>
+                         <div>
+                            <label for="student_csv" class="block text-sm font-medium text-gray-700 mb-1">CSV File *</label>
+                             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                                 <div class="space-y-1 text-center">
+                                     <i class="fas fa-file-csv text-4xl text-gray-400 mx-auto"></i>
+                                     <div class="flex text-sm text-gray-600">
+                                         <label for="student_csv" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                             <span>Upload a file</span>
+                                             <input id="student_csv" name="student_csv" type="file" class="sr-only" accept=".csv">
+                                         </label>
+                                         <p class="pl-1">or drag and drop</p>
+                                     </div>
+                                     <p class="text-xs text-gray-500" id="csvFileName">No file chosen</p>
+                                 </div>
+                             </div>
+                             <p id="importError" class="hidden text-xs text-red-600 mt-1"></p>
+                         </div>
+                         <div>
+                            <a href="{{ url_for('export_student_template') }}" class="text-sm text-blue-600 hover:underline inline-flex items-center">
+                                <i class="fas fa-download mr-1.5"></i>Download Template CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                    <button type="button" onclick="closeImportStudentsModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">Import Students</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reset Data Confirmation Modal -->
+    <div id="resetModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="resetModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="resetDialog">
+             <div class="p-6">
+                <div class="flex items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="resetModalTitle">
+                            Reset All Data?
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                Are you sure you want to reset all application data (students, classes, assignments, grades)? This action cannot be undone and will restore the initial default data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl">
+                <button type="button" id="confirmReset"
+                        class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Yes, Reset Data
+                </button>
+                <button type="button" onclick="hideResetConfirmation()"
+                        class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- --- END Global Modals --- -->
+
+
+    <!-- Link to external JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Page-specific JavaScript -->
+    {% block scripts %}{% endblock %}
+
+    <!-- Fallback for showToast if not defined in script.js -->
+    <script>
+        // Ensure showToast exists globally, provide fallback if needed
+        if (typeof window.showToast === 'undefined') {
+            window.showToast = function(message, type = 'info') {
+                console.warn("showToast fallback:", type.toUpperCase(), message);
+                // Simple alert fallback (consider a better inline fallback if needed)
+                // alert(`${type.toUpperCase()}: ${message}`);
+            };
+        }
+    </script>
+</body>
+</html>

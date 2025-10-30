@@ -104,9 +104,9 @@
                 <option value="Yamuna Campus">Yamuna Campus</option>
                 <option value="Subhash Nagar Campus">Subhash Nagar Campus</option>
                  {# You might still need app.py to pass available_campuses if you want this dynamic later #}
-                 {# {% for campus in available_campuses | sort %} #}
-                 {# <option value="{{ campus }}">{{ campus }}</option> #}
-                 {# {% endfor %} #}
+                {# {% for campus in available_campuses | sort %} #}
+                {# <option value="{{ campus }}">{{ campus }}</option> #}
+                {# {% endfor %} #}
             </select>
         </div>
         <!-- Status Filter -->
@@ -176,20 +176,9 @@
                     </td>
                     <td class="px-4 md:px-6 py-3 whitespace-nowrap">
                         <div class="flex items-center">
-                            
-                            <!-- **** NEW: Profile Picture or Initial **** -->
-                            {% if student.photo %}
-                                <img src="{{ student.photo }}" 
-                                     alt="{{ student.name }}" 
-                                     class="w-8 h-8 rounded-full object-cover mr-3 flex-shrink-0"
-                                     onerror="this.onerror=null; this.src='https://placehold.co/32x32/E2E8F0/A0AEC0?text={{ student.name[0] | upper if student.name else '?' }}';">
-                            {% else %}
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-gray-200">
-                                    <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?' }}</span>
-                                </div>
-                            {% endif %}
-                            <!-- **** END NEW **** -->
-
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-gray-200">
+                                <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?' }}</span>
+                            </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ student.name }}</p>
                                 <p class="text-xs text-gray-500 truncate hidden sm:block">{{ student.email }}</p>
@@ -427,6 +416,69 @@
         const campusFilter = document.getElementById('campusFilter');
         const studentRows = document.querySelectorAll('.student-row');
 
+        // --- Note: Modal Listeners (add/import) are now handled by global script.js ---
+        // --- Bulk action listeners are also handled by global script.js ---
+
+        // --- Filtering Logic ---
+        function filterAndSortStudents() {
+            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const statusValue = statusFilter ? statusFilter.value : 'all';
+            // Read from new filters
+            const gradeValue = gradeFilter ? gradeFilter.value : 'all';
+            const sectionValue = sectionFilter ? sectionFilter.value : 'all';
+            const campusValue = campusFilter ? campusFilter.value : 'all';
+
+            let visibleCount = 0;
+            studentRows.forEach(row => {
+                const name = row.dataset.name || '';
+                const email = row.dataset.email || '';
+                const uid = row.dataset.uid || '';
+                const status = row.dataset.status || 'N/A';
+                // Read new data attributes
+                const gradeName = row.dataset.gradeName || '';
+                const sectionName = row.dataset.sectionName || '';
+                const campusName = row.dataset.campusName || '';
+
+                const matchesSearch = searchTerm === '' ||
+                                      name.includes(searchTerm) ||
+                                      email.includes(searchTerm) ||
+                                      uid.includes(searchTerm);
+                const matchesStatus = statusValue === 'all' || status === statusValue;
+                // Check against new filters
+                // Ensure case-insensitive comparison for filters
+                const matchesGrade = gradeValue === 'all' || gradeName === gradeValue.toLowerCase();
+                const matchesSection = sectionValue === 'all' || sectionName === sectionValue.toLowerCase();
+                const matchesCampus = campusValue === 'all' || campusName === campusValue.toLowerCase();
+
+
+                // Combine all matches
+                const isVisible = matchesSearch && matchesStatus && matchesGrade && matchesSection && matchesCampus;
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) visibleCount++;
+            });
+            // Update UI if no students are visible
+            const noStudentsRow = document.querySelector('#studentTableBody tr:not(.student-row)');
+            if (noStudentsRow) {
+                noStudentsRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+
+        // Attach filter event listeners
+        if (searchInput) searchInput.addEventListener('input', debounce(filterAndSortStudents, 300));
+        if (statusFilter) statusFilter.addEventListener('change', filterAndSortStudents);
+        // Add listeners for new filters
+        if (gradeFilter) gradeFilter.addEventListener('change', filterAndSortStudents);
+        if (sectionFilter) sectionFilter.addEventListener('change', filterAndSortStudents);
+        if (campusFilter) campusFilter.addEventListener('change', filterAndSortStudents);
+
+        // Initialize filtering on page load
+        filterAndSortStudents();
+
+        // --- Removed JS functions to refresh filters ---
+        // Filters are now populated by Jinja on page load based on data from app.py
+        // Ensure app.py passes available_grades, sections, and available_campuses
+        // And ensure student objects have gradeName, sectionName, campusName
     });
 </script>
 {% endblock %}
+

@@ -9,56 +9,107 @@
 {% block content %}
 <!-- Header Actions -->
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-    <div class="flex-shrink-0">
-        <!-- Optional: Add filters for assignments (e.g., by class, type, due date) -->
-        {# Example Filter:
-        <select id="classFilterAssignments" class="p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+    <!-- Filter Section (Left) -->
+    <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative">
+            <i class="fas fa-search text-gray-400 absolute top-1/2 left-3 transform -translate-y-1/2"></i>
+            <input type="text" id="searchAssignments" placeholder="Search assignments..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-48">
+        </div>
+        <!-- Ensure all_classes is passed from app.py -->
+        <select id="classFilter" class="p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-auto">
             <option value="all">All Classes</option>
-            {% for cls in all_classes | sort(attribute='grade') | sort(attribute='name') %}
-            <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }}</option>
+            {% for cls in all_classes | sort(attribute='name') %}
+            {# Display campus alongside class name and section #}
+            <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }} ({{ cls.campus }})</option>
             {% endfor %}
         </select>
-        #}
+        <!-- Ensure assignment_types is passed from app.py -->
+        <select id="typeFilter" class="p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-auto">
+            <option value="all">All Types</option>
+            {% for type_option in assignment_types %}
+            <option value="{{ type_option }}">{{ type_option }}</option>
+            {% endfor %}
+        </select>
     </div>
+
+    <!-- Action Buttons (Right) -->
     <div class="flex space-x-3 w-full md:w-auto justify-end">
-         <button onclick="window.location.href='{{ url_for('dashboard') }}'"
+        <button onclick="window.location.href='{{ url_for('dashboard') }}'"
                 class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center">
             <i class="fas fa-arrow-left mr-2"></i>Back
         </button>
-        {# --- Verify this button --- #}
+        <!-- This button requires the addAssignmentModal to be defined (usually in base.html) -->
         <button onclick="showAddAssignmentModal()"
                 class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center">
             <i class="fas fa-plus mr-2"></i>New Assignment
         </button>
-        {# --- End Verify --- #}
-        <!-- Optional: Export button if needed for all assignments -->
     </div>
 </div>
 
 <!-- Assignments Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 assignments-grid"> {# Added class for JS #}
-    {% for assignment in assignments %} {# Sorting is now done in Python #}
-    <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-200 p-5 assignment-card" data-class-id="{{ assignment.classId }}"> {# Added class and data attribute #}
+<!-- This version assumes app.py prepares assignments with `classNames` and `classColors` lists -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 assignments-grid">
+    {% for assignment in assignments %}
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-200 p-5 assignment-row assignment-card"
+         data-type="{{ assignment.type | lower }}"
+         data-title="{{ assignment.title | lower }}"
+         data-class-ids="{{ assignment.classIds | join(',') if assignment.classIds else '' }}" {# Use classIds if available #}
+         data-class-names="{{ (assignment.classNames | join(',')) | lower if assignment.classNames else '' }}">
+
         <div class="flex justify-between items-start mb-3">
             <div>
-                <h3 class="text-md font-semibold text-gray-800 leading-tight">{{ assignment.title }}</h3>
-                <span class="text-xs font-medium px-2 py-0.5 rounded-full text-white {{ assignment.classColor | default('bg-gray-500') }} mt-1 inline-block">
-                    {{ assignment.className | default('Unknown Class') }}
-                </span>
+                <h3 class="text-md font-semibold text-gray-800 leading-tight">{{ assignment.title | default('Untitled Assignment') }}</h3>
+
+                <!-- Show list of class tags -->
+                <div class="flex flex-wrap gap-1 mt-2">
+                {% if assignment.classNames and assignment.classNames|length > 0 %}
+                    {% for i in range(assignment.classNames | length) %}
+                        <span class="text-xs font-medium px-2 py-0.5 rounded-full text-white {{ assignment.classColors[i] | default('bg-gray-500') }}">
+                            {{ assignment.classNames[i] | default('Unknown Class') }}
+                        </span>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-xs text-gray-400 italic">No classes assigned</span>
+                {% endif %}
+                </div>
             </div>
-            <!-- More Actions Dropdown -->
+
+            <!-- Dropdown Menu -->
             <div class="relative">
-                 <button class="text-gray-400 hover:text-gray-600 focus:outline-none w-6 h-6 flex items-center justify-center rounded" onclick="toggleDropdown('{{ assignment.id }}')">
-                     <i class="fas fa-ellipsis-v"></i>
-                 </button>
-                 <div id="dropdown-{{ assignment.id }}" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-10" role="menu">
-                     <div class="py-1" role="none">
-                         <a href="#" onclick="viewAssignmentGrades('{{ assignment.id }}', '{{ assignment.classId }}'); return false;" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">View/Edit Grades</a>
-                         <a href="#" onclick="editAssignment('{{ assignment.id }}'); return false;" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Edit Details</a>
-                         <a href="#" onclick="deleteAssignment('{{ assignment.id }}'); return false;" class="text-red-600 block px-4 py-2 text-sm hover:bg-red-50" role="menuitem">Delete Assignment</a>
-                     </div>
-                 </div>
+                 {% if assignment.id %} {# Check if ID exists before rendering button #}
+                <button class="text-gray-400 hover:text-gray-600 focus:outline-none w-6 h-6 flex items-center justify-center rounded" onclick="toggleDropdown('{{ assignment.id }}')">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div id="dropdown-{{ assignment.id }}" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-10" role="menu">
+                    <div class="py-1" role="none">
+                        {# Check if classIds exist and is not empty #}
+                        {% if assignment.classIds and assignment.classIds | length > 0 %}
+                            <p class="text-xs text-gray-500 px-4 pt-2 pb-1 font-semibold uppercase">View/Edit Grades For:</p>
+                            {# Loop through classIds and corresponding names to generate links #}
+                            {% for i in range(assignment.classIds | length) %}
+                            <a href="{{ url_for('gradebook', assignment_id=assignment.id, class_id=assignment.classIds[i]) }}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">
+                                <i class="fas fa-users w-4 mr-2 text-gray-400"></i>{# Ensure classNames[i] exists #}{{ assignment.classNames[i] | default('Class ' + assignment.classIds[i]) }}
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                             {# Link to gradebook with just assignment_id if no classes #}
+                             <a href="{{ url_for('gradebook', assignment_id=assignment.id) }}" class="text-gray-400 block px-4 py-2 text-sm italic" role="menuitem">No classes assigned</a>
+                        {% endif %}
+                        <div class="border-t my-1"></div>
+                        <a href="#" onclick="editAssignment('{{ assignment.id }}'); return false;" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">
+                            <i class="fas fa-pen w-4 mr-2 text-gray-400"></i>Edit Details
+                        </a>
+                        <a href="#" onclick="deleteAssignment('{{ assignment.id }}'); return false;" class="text-red-600 block px-4 py-2 text-sm hover:bg-red-50" role="menuitem">
+                            <i class="fas fa-trash-alt w-4 mr-2 text-red-400"></i>Delete Assignment
+                        </a>
+                    </div>
+                </div>
+                 {% else %}
+                 {# Optionally show an error or placeholder if assignment ID is missing #}
+                 <span class="text-red-500 text-xs italic">(Error: Missing ID)</span>
+                {% endif %}
             </div>
+
         </div>
 
         <div class="flex items-center space-x-4 text-xs text-gray-500 mb-4">
@@ -93,7 +144,8 @@
             </div>
         </div>
     </div>
-    {% else %} {# Use else for empty list #}
+    {% else %}
+    <!-- Empty State -->
     <div class="md:col-span-2 lg:col-span-3 text-center py-16 bg-white rounded-xl shadow-md border border-gray-100">
         <i class="fas fa-clipboard-list text-gray-300 text-5xl mb-4"></i>
         <p class="text-gray-500 text-lg mb-4">No assignments created yet.</p>
@@ -102,181 +154,12 @@
             <i class="fas fa-plus mr-2"></i>Create First Assignment
         </button>
     </div>
-    {% endfor %} {# Moved endfor after else #}
-</div>
-
-
-<!-- Add Assignment Modal -->
-{# --- Verify these IDs --- #}
-<div id="addAssignmentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addAssignmentModalTitle" role="dialog" aria-modal="true">
-     <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addAssignmentDialog">
-        <form id="addAssignmentForm">
-             {# --- End Verify --- #}
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-xl font-semibold text-gray-800" id="addAssignmentModalTitle">Add New Assignment</h3>
-                    <button type="button" onclick="closeAddAssignmentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="space-y-4">
-                     <div>
-                        <label for="assignmentClass" class="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                        <select id="assignmentClass" name="class_id" required
-                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                            <option value="" disabled selected>Select a class...</option>
-                             {% for cls in all_classes | sort(attribute='grade') | sort(attribute='name') %} {# Sort class dropdown #}
-                             <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="assignmentTitle" class="block text-sm font-medium text-gray-700 mb-1">Assignment Title</label>
-                        <input type="text" id="assignmentTitle" name="title" required
-                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="assignmentDueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                            <input type="date" id="assignmentDueDate" name="due_date" required
-                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                        </div>
-                         <div>
-                            <label for="assignmentPoints" class="block text-sm font-medium text-gray-700 mb-1">Total Points</label>
-                            <input type="number" id="assignmentPoints" name="total_points" required min="1" value="100"
-                                   class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="assignmentType" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                        <select id="assignmentType" name="type" required
-                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                             {% for type_option in assignment_types %} {# Use passed variable #}
-                             <option value="{{ type_option }}">{{ type_option }}</option>
-                             {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <!-- Footer Actions -->
-             <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
-                <button type="button" onclick="closeAddAssignmentModal()"
-                        class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
-                     <i class="fas fa-plus mr-2"></i>Create Assignment
-                </button>
-            </div>
-        </form>
-    </div>
+    {% endfor %}
 </div>
 
 {% endblock %}
 
 {% block scripts %}
-{# Ensure script.js is loaded via base.html #}
-<script>
-    // --- Initialize listeners specifically for this page ---
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- REMOVED CALL TO initializeAssignmentFormListener(); ---
-        // It's already called globally in script.js
-
-        // Add listener to close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
-            // Check if dropdown functions exist before calling
-            if (typeof closeDropdowns === 'function' &&
-                !event.target.closest('[onclick^="toggleDropdown"]') &&
-                !event.target.closest('[id^="dropdown-"]'))
-            {
-                closeDropdowns();
-            }
-        });
-
-         // Example Filter Logic (Optional - Keep commented out or implement fully):
-         /*
-         const classFilter = document.getElementById('classFilterAssignments');
-         if (classFilter) {
-             classFilter.addEventListener('change', function() {
-                 const selectedClassId = this.value;
-                 document.querySelectorAll('.assignment-card').forEach(card => {
-                     if (selectedClassId === 'all' || card.dataset.classId === selectedClassId) {
-                         card.style.display = '';
-                     } else {
-                         card.style.display = 'none';
-                     }
-                 });
-             });
-         }
-         */
-    });
-
-    // --- Dropdown Menu Logic (keep definitions here or in global script.js) ---
-    // Ensure these functions are defined ONLY ONCE (preferably in script.js)
-    // If they are already in script.js, you can remove these definitions from here.
-    if (typeof toggleDropdown === 'undefined') { // Define only if not already defined globally
-        function toggleDropdown(assignmentId) {
-            const dropdown = document.getElementById(`dropdown-${assignmentId}`);
-            if (dropdown) {
-                if (typeof closeDropdowns === 'function') closeDropdowns(assignmentId); // Close others first
-                dropdown.classList.toggle('hidden');
-            }
-        }
-    }
-
-    if (typeof closeDropdowns === 'undefined') { // Define only if not already defined globally
-        function closeDropdowns(excludeId = null) {
-            document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
-                if (!excludeId || d.id !== `dropdown-${excludeId}`) {
-                    d.classList.add('hidden');
-                }
-            });
-        }
-    }
-
-
-    // --- Specific Actions (using functions assumed to be defined in script.js) ---
-    // Ensure these functions (viewAssignmentGrades, editAssignment, deleteAssignment)
-    // are defined globally in script.js
-    function viewAssignmentGrades(assignmentId, classId) {
-         if (typeof closeDropdowns === 'function') closeDropdowns();
-         if(classId) {
-             window.location.href = `/class/${classId}?highlight_assignment=${assignmentId}`;
-         } else {
-            if(typeof showToast === 'function') showToast('Cannot determine class for assignment.', 'error');
-            else console.error('Cannot determine class for assignment.');
-         }
-    }
-
-    function editAssignment(assignmentId) {
-        if (typeof closeDropdowns === 'function') closeDropdowns();
-        if(typeof showToast === 'function') showToast(`Edit for ${assignmentId} not implemented.`, 'info');
-        else console.info(`Edit for ${assignmentId} not implemented.`);
-    }
-
-    function deleteAssignment(assignmentId) {
-        if (typeof closeDropdowns === 'function') closeDropdowns();
-        if (confirm(`Are you sure you want to delete assignment ${assignmentId}? This action cannot be undone.`)) {
-             const showToastFunc = typeof showToast === 'function' ? showToast : (msg, type) => console[type === 'error' ? 'error' : 'log'](msg);
-             fetch('/delete_assignment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ assignment_id: assignmentId }) })
-             .then(response => response.ok ? response.json() : response.json().then(err => { throw new Error(err.message || 'Server error') }))
-             .then(result => {
-                 if (result.success) {
-                     showToastFunc('Assignment deleted.', 'success');
-                     const cardToRemove = document.querySelector(`[onclick="toggleDropdown('${assignmentId}')"]`)?.closest('.assignment-card');
-                     if (cardToRemove) {
-                         cardToRemove.remove();
-                         if (!document.querySelector('.assignments-grid > .assignment-card')) { location.reload(); } // Reload if empty
-                     } else { location.reload(); }
-                 } else { throw new Error(result.message || 'Failed to delete.'); }
-             })
-             .catch(error => { console.error('Error deleting assignment:', error); showToastFunc(`Error: ${error.message}`, 'error'); });
-        }
-    }
-
-</script>
+{# No page-specific scripts needed beyond script.js #}
 {% endblock %}
-```
 

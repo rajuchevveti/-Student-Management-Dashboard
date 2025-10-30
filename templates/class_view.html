@@ -34,33 +34,33 @@
 <!-- Class Statistics -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
-        {# --- ADDED ID --- #}
+         {# --- ID for Total Students (JS might use later) --- #}
         <div id="stat-total-students" class="text-2xl font-bold text-blue-600">{{ students|length }}</div>
         <div class="text-xs md:text-sm text-gray-500 mt-1">Total Students</div>
     </div>
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
         <div class="text-2xl font-bold text-green-600">
-            {# --- ADDED ID --- #}
+             {# --- CORRECTED ID --- #}
             <span id="stat-avg-grade">
-                {% set total_grade = namespace(value=0) %}
-                {% set count = namespace(value=0) %}
-                {% for s in students if s.overallGrade is defined and s.overallGrade is not none %}
-                    {% set total_grade.value = total_grade.value + s.overallGrade %}
-                    {% set count.value = count.value + 1 %}
-                {% endfor %}
-                {% if count.value > 0 %}{{ (total_grade.value / count.value)|round }}%{% else %}N/A{% endif %}
+                 {% set total_grade = namespace(value=0) %}
+                 {% set count = namespace(value=0) %}
+                 {% for s in students if s.overallGrade is defined and s.overallGrade is not none %}
+                     {% set total_grade.value = total_grade.value + s.overallGrade %}
+                     {% set count.value = count.value + 1 %}
+                 {% endfor %}
+                 {% if count.value > 0 %}{{ (total_grade.value / count.value)|round }}%{% else %}N/A{% endif %}
             </span>
         </div>
         <div class="text-xs md:text-sm text-gray-500 mt-1">Average Grade</div>
     </div>
      <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
-         {# --- ADDED ID --- #}
+          {# --- CORRECTED ID --- #}
         <div id="stat-at-risk" class="text-2xl font-bold text-red-600">
              {% set at_risk_count = namespace(value=0) %}
              {% for s in students %}
-                {% if get_status_from_grade(s.overallGrade) == 'At Risk' %}
-                    {% set at_risk_count.value = at_risk_count.value + 1 %}
-                {% endif %}
+                 {% if get_status_from_grade(s.overallGrade) == 'At Risk' %}
+                     {% set at_risk_count.value = at_risk_count.value + 1 %}
+                 {% endif %}
              {% endfor %}
              {{ at_risk_count.value }}
         </div>
@@ -89,7 +89,8 @@
                     <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            {# --- ADDED ID HERE --- #}
+            <tbody id="classStudentTableBody" class="divide-y divide-gray-200">
                 {% for student in students %}
                 <tr class="hover:bg-gray-50 transition-colors duration-150 student-row" data-student-id="{{ student.id }}">
                     <td class="px-4 md:px-6 py-3 whitespace-nowrap">
@@ -128,7 +129,7 @@
                     <td class="px-4 md:px-6 py-3 whitespace-nowrap">
                         <a href="{{ url_for('student_profile', student_id=student.id) }}"
                                 class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
-                            View Profile
+                             View Profile
                         </a>
                     </td>
                 </tr>
@@ -145,7 +146,7 @@
 {# Ensure global script.js is loaded via base.html #}
 <script>
     // Functions like updateGrade, getStatusInfoFromGrade, updateStatusBadge,
-    // and updateClassViewStats are assumed to be defined in the global script.js
+    // and updateClassSummaryStats are assumed to be defined in the global script.js
 
     // Make sure these JS helper functions are available (ideally in script.js)
      if (typeof getStatusInfoFromGrade === 'undefined') {
@@ -170,39 +171,13 @@
         }
     }
 
-    // Define or ensure updateClassViewStats exists (ideally in script.js)
-    if (typeof updateClassViewStats === 'undefined') {
-        function updateClassViewStats() {
-            const statAvgGradeEl = document.getElementById('stat-avg-grade');
-            const statAtRiskEl = document.getElementById('stat-at-risk');
-            const gradeInputs = document.querySelectorAll('.grade-input'); // Get all grade inputs on the page
-
-            if (gradeInputs.length === 0) return; // Not on the right page
-
-            let totalGrade = 0;
-            let studentCount = 0;
-            let atRiskCount = 0;
-
-            gradeInputs.forEach(input => {
-                const gradeNum = parseInt(input.value, 10);
-                if (!isNaN(gradeNum)) {
-                    totalGrade += gradeNum;
-                    studentCount++;
-                    if (gradeNum < 60) {
-                        atRiskCount++;
-                    }
-                }
-            });
-
-            const avgGrade = (studentCount > 0) ? Math.round(totalGrade / studentCount) : 0;
-
-            if (statAvgGradeEl) {
-                statAvgGradeEl.textContent = `${avgGrade}%`;
-            }
-            if (statAtRiskEl) {
-                statAtRiskEl.textContent = atRiskCount;
-            }
-            console.log(`[Debug] Stats updated: Avg: ${avgGrade}%, At Risk: ${atRiskCount}`);
+    // This function definition is actually in script.js now,
+    // but leaving a check here ensures it's defined.
+    if (typeof updateClassSummaryStats === 'undefined') {
+        console.error("updateClassSummaryStats function is missing from script.js!");
+        // Define a dummy function to prevent further errors if script.js failed
+        function updateClassSummaryStats() {
+            console.warn("Using dummy updateClassSummaryStats function.");
         }
     }
 </script>

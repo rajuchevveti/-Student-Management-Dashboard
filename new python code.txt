@@ -147,55 +147,7 @@ def ensure_data_structure(data):
                 assignment['classIds'] = []
             needs_save = True
     # --- END Assignment Migration ---
-        
-    # --- **** UPDATED: Auto-sync Student Photos by UID **** ---
-    # Define the path to your student photos folder
-    PHOTO_DIR_NAME = 'student_photos'
-    PHOTO_DIR_PATH = os.path.join(app.static_folder, PHOTO_DIR_NAME) # e.g., 'static/student_photos'
-    
-    # 1. Check if the photo directory exists
-    if os.path.exists(PHOTO_DIR_PATH):
-        print(f"Syncing photos from {PHOTO_DIR_PATH}...")
-        found_photos = {} # To store {lowercase_student_uid: filename}
-        
-        # 2. Scan the directory for image files
-        try:
-            for filename in os.listdir(PHOTO_DIR_PATH):
-                file_lower = filename.lower()
-                if file_lower.endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-                    # Get the student UID from the filename (e.g., "KYC041JO.png" -> "kyc041jo")
-                    student_uid = os.path.splitext(filename)[0].lower() # Match by UID, lowercase
-                    found_photos[student_uid] = filename # Map lowercase uid to original cased filename
-        except Exception as e:
-            print(f"Warning: Could not scan photo directory: {e}")
-
-        # 3. Loop through students and update paths
-        if found_photos:
-            students_list = data.get('students', [])
-            for student in students_list:
-                if isinstance(student, dict):
-                    student_uid_from_data = student.get('uid') # Get the student's UID
-                    if student_uid_from_data:
-                        student_uid_lower = student_uid_from_data.lower()
-                        # Check if this student's lowercase UID matches a found photo
-                        if student_uid_lower in found_photos:
-                            # Construct the web path (e.g., /static/student_photos/KYC041JO.png)
-                            new_photo_path = f"/static/{PHOTO_DIR_NAME}/{found_photos[student_uid_lower]}"
-                            
-                            # Only update if the path is different, and mark for saving
-                            if student.get('photo') != new_photo_path:
-                                print(f"Updating photo for student UID {student_uid_from_data}: {new_photo_path}")
-                                student['photo'] = new_photo_path
-                                needs_save = True # Mark that data.json needs to be re-saved
-    else:
-        # Create the directory if it doesn't exist
-        try:
-            os.makedirs(PHOTO_DIR_PATH)
-            print(f"Created photo directory: {PHOTO_DIR_PATH}")
-        except Exception as e:
-            print(f"Warning: Could not create photo directory: {e}")
-    # --- **** END Auto-sync Student Photos **** ---
-
+            
     if needs_save:
         save_data(data)
     return data
@@ -585,45 +537,34 @@ def gradebook():
     all_classes = data.get('classes', [])
     all_students = data.get('students', [])
     all_grades = data.get('grades', {})
-
+    
     class_map = {c.get('id'): c for c in all_classes if isinstance(c, dict)}
-
+    
     assignment_options = []
     for a in all_assignments:
         if isinstance(a, dict):
-            a_copy = a.copy() # Operate on a copy
+            a_copy = a.copy()
+            # Get count of classes
             class_count = len(a.get('classIds', []))
-            # Keep the original title and add class count description separately if needed in template
-            a_copy['title_with_count'] = f"{a.get('title')} ({class_count} class{'es' if class_count != 1 else ''})"
-            # Add the classIds directly to the option data
-            a_copy['classIds'] = a.get('classIds', [])
+            a_copy['title'] = f"{a.get('title')} ({class_count} class{'es' if class_count != 1 else ''})"
             assignment_options.append(a_copy)
-
+            
     assignment_options.sort(key=lambda x: x.get('dueDate', DEFAULT_DATE_SORT_KEY), reverse=True)
-
+    
     selected_assignment_id = request.args.get('assignment_id', '')
     selected_class_id = request.args.get('class_id', '')
-
+    
     selected_assignment = None
     selected_class = None
     filtered_students = []
     student_scores = {}
-    relevant_classes_for_assignment = [] # For pre-populating class dropdown
-
+    
     if selected_assignment_id:
-        # Find the original assignment data to get totalPoints etc.
-        selected_assignment_details = next((a for a in all_assignments if a.get('id') == selected_assignment_id), None)
-        if selected_assignment_details:
-             # Create a copy for modification if needed for display, but keep original structure
-             selected_assignment = selected_assignment_details.copy()
-             # Get the list of classes for the selected assignment
-             relevant_class_ids = selected_assignment.get('classIds', [])
-             relevant_classes_for_assignment = [c for c in all_classes if c.get('id') in relevant_class_ids]
-
-
+        selected_assignment = next((a for a in all_assignments if a.get('id') == selected_assignment_id), None)
+    
     if selected_class_id:
         selected_class = next((c for c in all_classes if isinstance(c, dict) and c.get('id') == selected_class_id), None)
-
+        
     if selected_assignment and selected_class:
         # Check if the selected assignment is assigned to the selected class
         if selected_class_id in selected_assignment.get('classIds', []):
@@ -633,24 +574,19 @@ def gradebook():
             if not isinstance(student_scores, dict): student_scores = {}
         else:
             # Assignment doesn't match class, show empty
-            # Keep assignment selected, but clear class and students
-            selected_class = None
-            selected_class_id = '' # Clear selected class ID
+            selected_assignment = None 
             filtered_students = []
             student_scores = {}
-
-
+            
     return render_template('gradebook.html',
-                           assignment_options=assignment_options, # Pass updated options
-                           all_classes=all_classes, # Pass all classes for JS fallback
-                           relevant_classes=relevant_classes_for_assignment, # Pass relevant classes
+                           assignment_options=assignment_options,
+                           all_classes=all_classes,
                            selected_assignment_id=selected_assignment_id,
                            selected_class_id=selected_class_id,
-                           selected_assignment=selected_assignment, # This might be the detailed one now
+                           selected_assignment=selected_assignment,
                            selected_class=selected_class,
                            students=filtered_students,
                            scores=student_scores)
-
 # --- END UPDATED /gradebook route ---
 
 @app.route('/settings')

@@ -9,7 +9,10 @@
 {% block content %}
 <!-- Class Selection Filters -->
 <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Select Class</h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Select Class</h2>
+        <!-- REMOVED Manage Classes Button -->
+    </div>
     <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Grade</label>
@@ -37,18 +40,8 @@
     </form>
 </div>
 
-<!-- Student Search -->
-<div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Search Student</h2>
-    <div class="relative">
-        <input type="text" 
-               id="studentSearch" 
-               placeholder="Search by student name..." 
-               class="w-full p-4 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-    </div>
-    <div id="searchResults" class="mt-4 hidden max-h-60 overflow-y-auto border border-gray-200 rounded-lg"></div>
-</div>
+<!-- REMOVED Student Search Section -->
+<!-- The search box in the main header (from base.html) is used instead -->
 
 <!-- Quick Stats -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -59,13 +52,10 @@
             </div>
             <div>
                 <p class="text-sm text-gray-600">Total Students</p>
-                <!-- --- THIS IS THE FIX --- -->
                 <p class="text-2xl font-bold text-gray-800">{{ total_students }}</p>
-                <!-- --- END FIX --- -->
             </div>
         </div>
     </div>
-    
     <div class="bg-white rounded-xl shadow-lg p-6">
         <div class="flex items-center">
             <div class="p-3 bg-green-100 rounded-lg mr-4">
@@ -77,7 +67,6 @@
             </div>
         </div>
     </div>
-    
     <div class="bg-white rounded-xl shadow-lg p-6">
         <div class="flex items-center">
             <div class="p-3 bg-purple-100 rounded-lg mr-4">
@@ -89,7 +78,6 @@
             </div>
         </div>
     </div>
-
     <div class="bg-white rounded-xl shadow-lg p-6">
         <div class="flex items-center">
             <div class="p-3 bg-orange-100 rounded-lg mr-4">
@@ -138,7 +126,6 @@
             {% endif %}
         </h2>
     </div>
-    
     {% if classes %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for class in classes %}
@@ -181,7 +168,7 @@
         </button>
     </div>
     {% if alerts %}
-        <div class="space-y-3">
+    <div class="space-y-3">
         {% for alert in alerts %}
         <div class="flex items-center p-4 border-l-4 border-red-500 bg-red-50 rounded">
             <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
@@ -195,12 +182,20 @@
             </button>
         </div>
         {% endfor %}
-        </div>
+    </div>
     {% else %}
-        <div class="text-center py-8">
-            <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
-            <p class="text-gray-500 text-lg">No active alerts! All systems are running smoothly. 🎉</p>
-        </div>
+    <div class="text-center py-8">
+        <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
+        <p class="text-gray-500 text-lg">No active alerts! All systems are running smoothly. 🎉</p>
+    </div>
     {% endif %}
 </div>
+
+<!--
+    REMOVED MODAL HTML FROM HERE.
+    It now lives in base.html so it can be
+    accessed from any page.
+-->
+
 {% endblock %}
+
