@@ -369,8 +369,8 @@
       "classId": "c2",
       "name": "Student 6",
       "email": "student6@school.edu",
-      "overallGrade": 76,
-      "status": "Good",
+      "overallGrade": 50,
+      "status": "At Risk",
       "lastMilestone": "Initial Setup",
       "uid": "UID1006",
       "rollNumber": "ROLL006",
@@ -380,10 +380,10 @@
       "joinDate": "2025-10-29",
       "roboticsTeam": "Team Google",
       "skills": {
-        "Concept Understanding": 1,
+        "Concept Understanding": 5,
         "Practical Implementation": 1,
         "Programming & Logic": 1,
-        "Communication": 1
+        "Communication": 5
       }
     },
     {
