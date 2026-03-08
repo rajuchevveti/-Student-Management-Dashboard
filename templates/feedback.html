@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Feedback - Robotics Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for star rating interaction */
+        .star-rating input { display: none; }
+        .star-rating label { cursor: pointer; color: #cbd5e1; transition: color 0.2s; float: right; }
+        /* When a star is clicked, color it and all stars before it */
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label { color: #f59e0b; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-8 px-4">
+
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i class="fas fa-robot text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800">Faculty Evaluation</h1>
+            <p class="text-gray-600 mt-2">Your feedback helps us improve the Robotics Academy experience.</p>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-6 md:p-8">
+                
+                <div id="successMessage" class="hidden text-center py-10">
+                    <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Thank You!</h2>
+                    <p class="text-gray-600 mt-2">Your feedback has been successfully submitted and remains anonymous to the faculty.</p>
+                    <button onclick="window.location.reload()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Submit Another</button>
+                </div>
+
+                <form id="feedbackForm" class="space-y-6">
+                    <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i><span id="errorText"></span>
+                    </div>
+
+                    <!-- Verification -->
+                    <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl mb-6">
+                        <h3 class="font-semibold text-blue-900 mb-3"><i class="fas fa-user-shield mr-2"></i>Student Verification</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Your UID *</label>
+                                <input type="text" id="uid" required placeholder="e.g., KYC041JO" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <p class="text-xs text-blue-600 mt-1">Used only to verify enrollment. Faculty cannot see your UID.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Select Faculty *</label>
+                                <select id="faculty" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                    <option value="" disabled selected>Choose instructor...</option>
+                                    {% for faculty in faculty_members %}
+                                    <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ratings Section -->
+                    <div class="space-y-5">
+                        <h3 class="font-semibold text-gray-800 border-b pb-2">Rate the Instructor</h3>
+                        
+                        {% set categories = [
+                            ('knowledge', 'Subject Knowledge', 'Understanding of robotics concepts and materials.'),
+                            ('communication', 'Communication', 'Clarity in explaining complex topics.'),
+                            ('approachability', 'Approachability', 'Willingness to help and answer questions.'),
+                            ('punctuality', 'Organization & Time', 'Punctuality and structure of the class.'),
+                            ('practical', 'Practical Guidance', 'Helpfulness during hands-on lab sessions.')
+                        ] %}
+
+                        {% for id, title, desc in categories %}
+                        <div class="flex flex-col md:flex-row md:items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="mb-2 md:mb-0">
+                                <label class="font-medium text-gray-800 block">{{ title }}</label>
+                                <span class="text-xs text-gray-500">{{ desc }}</span>
+                            </div>
+                            
+                            <!-- Star Rating (Reversed for CSS peer sibling selector logic) -->
+                            <div class="star-rating flex flex-row-reverse justify-end md:justify-start text-2xl">
+                                <input type="radio" id="star5_{{ id }}" name="{{ id }}" value="5" required>
+                                <label for="star5_{{ id }}" class="fas fa-star px-1"></label>
+                                
+                                <input type="radio" id="star4_{{ id }}" name="{{ id }}" value="4">
+                                <label for="star4_{{ id }}" class="fas fa-star px-1"></label>
+                                
+                                <input type="radio" id="star3_{{ id }}" name="{{ id }}" value="3">
+                                <label for="star3_{{ id }}" class="fas fa-star px-1"></label>
+                                
+                                <input type="radio" id="star2_{{ id }}" name="{{ id }}" value="2">
+                                <label for="star2_{{ id }}" class="fas fa-star px-1"></label>
+                                
+                                <input type="radio" id="star1_{{ id }}" name="{{ id }}" value="1">
+                                <label for="star1_{{ id }}" class="fas fa-star px-1"></label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Comments -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Additional Comments (Optional)</label>
+                        <textarea id="comment" rows="4" placeholder="What did you like? What could be improved?" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-blue-700 transition-colors shadow-md flex justify-center items-center">
+                        <span>Submit Evaluation</span>
+                        <i id="loadingIcon" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6 text-sm text-gray-500">
+            <a href="{{ url_for('login') }}" class="hover:text-blue-600 underline">Admin Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingIcon = document.getElementById('loadingIcon');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            // Gather Ratings
+            const categories = ['knowledge', 'communication', 'approachability', 'punctuality', 'practical'];
+            const ratings = {};
+            let allRated = true;
+
+            categories.forEach(cat => {
+                const checked = document.querySelector(`input[name="${cat}"]:checked`);
+                if(checked) {
+                    ratings[cat] = parseInt(checked.value);
+                } else {
+                    allRated = false;
+                }
+            });
+
+            if (!allRated) {
+                errorText.textContent = "Please provide a rating for all 5 categories.";
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Build Payload
+            const payload = {
+                uid: document.getElementById('uid').value,
+                faculty_id: document.getElementById('faculty').value,
+                ratings: ratings,
+                comment: document.getElementById('comment').value
+            };
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75');
+            loadingIcon.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/submit_feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('feedbackForm').classList.add('hidden');
+                    document.getElementById('successMessage').classList.remove('hidden');
+                } else {
+                    errorText.textContent = result.message || "An error occurred.";
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorText.textContent = "Network error. Please try again.";
+                errorMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75');
+                loadingIcon.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

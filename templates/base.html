@@ -21,17 +21,12 @@
         <!-- Start collapsed (or remove 'collapsed' to start open by default) -->
         <div id="sidebar" class="sidebar collapsed">
             <!-- Logo Area -->
-            <!-- Logo Area -->
             <div class="sidebar-logo">
                 <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content items-center"> <!-- Added items-center for vertical alignment -->
                     <!-- Replace Robot Icon with your Logo Image -->
-                    
-                    <!-- **** FIX 1: Changed 'kos_logo.PNG' to 'kos_logo.png' (lowercase) **** -->
-                    <!-- **** FIX 2: Added 'logo-image' class for CSS targeting **** -->
                     <img src="{{ url_for('static', filename='kos_logo.png') }}" alt="KOS Logo" class="h-8 w-auto mr-2 logo-image"> <!-- Adjust h-8 (height) and mr-2 (margin) as needed -->
 
                     <!-- Container for Text Lines -->
-                    <!-- **** FIX 3: Added 'logo-text-container' for CSS targeting **** -->
                     <div class="flex flex-col logo-text-container">
                         <span class="logo-text font-bold text-lg leading-tight">K O S</span> <!-- Main Title: KOS -->
                         <span class="logo-subtitle text-xs text-blue-200 leading-tight block">Kakatiya Olympiad School</span> <!-- Subtitle -->
@@ -60,6 +55,13 @@
                             <i class="fas fa-edit"></i> {# Changed icon #}
                             <span class="nav-text">Gradebook</span>
                         </a>
+                        
+                        <!-- Role-based Access for Admin Links -->
+                        {% if session.get('role') == 'admin' %}
+                        <a href="{{ url_for('faculty_insights') }}" class="nav-item {% if request.endpoint == 'faculty_insights' %}active{% endif %}" data-tooltip="Faculty Insights">
+                            <i class="fas fa-star-half-alt"></i>
+                            <span class="nav-text">Faculty Insights</span>
+                        </a>
                          <a href="#" id="manageClassesButton" class="nav-item" data-tooltip="Manage Classes">
                             <i class="fas fa-school"></i>
                             <span class="nav-text">Manage Classes</span>
@@ -68,6 +70,7 @@
                             <i class="fas fa-cog"></i>
                             <span class="nav-text">Settings</span>
                         </a>
+                        {% endif %}
                     </div>
                 </nav>
 
@@ -78,8 +81,9 @@
                             <i class="fas fa-user text-white text-sm"></i>
                         </div>
                         <div class="admin-info">
-                            <span class="admin-name">Admin User</span>
-                            <span class="admin-role">Administrator</span>
+                            <!-- UPDATED to use session username dynamically -->
+                            <span class="admin-name">{{ session.get('name', 'User') }}</span>
+                            <span class="admin-role">{{ 'Administrator' if session.get('role') == 'admin' else 'Faculty' }}</span>
                         </div>
                     </a>
                 </div>
@@ -118,12 +122,23 @@
                         <span class="notification-dot"></span>
                     </button>
 
-                    <!-- User Profile Dropdown Placeholder -->
-                    <div class="user-profile">
-                        <i class="fas fa-user text-gray-700"></i>
-                        <span class="font-medium text-gray-800 hidden sm:inline">Admin User</span>
-                        <!-- Dropdown arrow could go here if needed -->
+                    <!-- **** UPDATED: Functional User Profile Dropdown **** -->
+                    <div class="relative group ml-2">
+                        <button class="flex items-center focus:outline-none cursor-pointer user-profile">
+                            <i class="fas fa-user-circle text-blue-600 text-2xl mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ session.get('name', 'User') }} <i class="fas fa-chevron-down text-xs ml-1 text-gray-400"></i></span>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 hidden group-hover:block z-50 overflow-hidden">
+                            <div class="py-1">
+                                <a href="{{ url_for('logout') }}" class="block px-4 py-3 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors flex items-center">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                    <!-- **** END UPDATED Dropdown **** -->
                 </div>
             </header>
 
@@ -138,6 +153,8 @@
     <!-- --- GLOBAL MODALS --- -->
     <!-- These modals are defined here in base.html so they are available on ALL pages -->
 
+    {% if session.get('role') == 'admin' %}
+    <!-- Admin Only Modals -->
     <!-- Modal 1: Manage Classes -->
     <div id="manage-classes-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="manageClassesModalTitle" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="manageClassesDialog">
@@ -154,7 +171,6 @@
                 <p class="p-4 text-center text-gray-500 text-sm">Loading classes...</p>
             </div>
             <!-- Footer -->
-            <!-- **** UPDATED: Added responsive classes for mobile **** -->
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0 gap-3">
                 <button type="button" onclick="closeManageClassesModal()" class="w-full sm:w-auto px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                     Close
@@ -190,7 +206,6 @@
                     </div>
                     <div>
                         <label for="class-campus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
-                         <!-- UPDATED: Use select dropdown for campus -->
                          <select id="class-campus" name="campus" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
                              <option value="" disabled selected>Select Campus</option>
                              {% for campus_option in ALL_CAMPUSES %}
@@ -201,19 +216,13 @@
                     <!-- Visual Color Picker -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Color *</label>
-                        <!-- Hidden input stores the selected Tailwind class -->
                         <input type="hidden" id="class-color" name="color">
                         <div class="flex flex-wrap gap-3">
-                             <!-- Generate radio buttons for colors -->
                              {% set colors = {'Blue': 'bg-blue-500', 'Green': 'bg-green-500', 'Red': 'bg-red-500', 'Purple': 'bg-purple-500', 'Sky': 'bg-sky-500', 'Amber': 'bg-amber-500', 'Teal': 'bg-teal-500', 'Gray': 'bg-gray-500'} %}
                              {% for name, bg_class in colors.items() %}
                              <label class="flex items-center space-x-2 cursor-pointer p-1">
-                                 <!-- The radio button itself -->
                                  <input type="radio" name="color_option" value="{{ bg_class }}" class="hidden peer" data-color-target="class-color">
-                                 <!-- The visual swatch -->
                                  <span class="w-6 h-6 {{ bg_class }} rounded-full border-2 border-white ring-2 ring-transparent peer-checked:ring-offset-1 peer-checked:ring-blue-600 transition-all duration-150"></span>
-                                 <!-- Optional: Text label for the color -->
-                                 {# <span class="text-sm text-gray-700">{{ name }}</span> #}
                              </label>
                              {% endfor %}
                         </div>
@@ -226,7 +235,7 @@
                         Cancel
                     </button>
                     <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
-                        Save Class <!-- Text changes dynamically -->
+                        Save Class
                     </button>
                 </div>
             </form>
@@ -237,15 +246,12 @@
     <div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addStudentModalTitle" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="addStudentDialog">
             <form id="addStudentForm" class="flex flex-col flex-1 overflow-hidden">
-                <!-- Header -->
                 <div class="flex justify-between items-center p-5 border-b border-gray-200">
                     <h3 class="text-xl font-semibold text-gray-800" id="addStudentModalTitle">Add New Student</h3>
                     <button type="button" onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close add student modal">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-
-                <!-- Content (Scrollable) -->
                 <div class="p-6 flex-1 overflow-y-auto space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -261,8 +267,6 @@
                                    aria-required="true">
                         </div>
                     </div>
-
-                    <!-- UID and Roll Number -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="studentUid" class="block text-sm font-medium text-gray-700 mb-1">UID *</label>
@@ -281,25 +285,19 @@
                              <p id="addRollNumberDuplicateError" class="hidden text-xs text-red-600 mt-1">Roll Number already exists</p>
                         </div>
                     </div>
-
                     <div class="relative">
                         <label for="addStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
-                         <!-- UPDATED ID to match JS -->
                         <select id="addStudentClass" name="classId" required
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 aria-required="true">
                             <option value="" disabled selected>Loading classes...</option>
-                            <!-- Options populated by showAddStudentModal in script.js -->
                         </select>
                         <span id="studentClassLoading" class="hidden absolute right-3 top-10 text-gray-400">
                             <i class="fas fa-spinner fa-spin"></i>
                         </span>
                     </div>
-
-                    <!-- Campus Dropdown -->
                     <div>
                         <label for="addStudentCampus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
-                         <!-- UPDATED ID and name -->
                         <select id="addStudentCampus" name="campus" required
                                 class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 aria-required="true">
@@ -309,10 +307,8 @@
                             {% endfor %}
                         </select>
                     </div>
-
                     <div>
                         <label for="addStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
-                         <!-- UPDATED ID -->
                         <input type="tel" id="addStudentParentPhone" name="parentPhone"
                                placeholder="+91 XXXXXXXXXX"
                                class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
@@ -322,8 +318,6 @@
                      <p id="addStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
                     <p class="text-xs text-gray-500 mt-4">* Required fields</p>
                 </div>
-
-                <!-- Footer -->
                 <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
                     <button type="button" onclick="closeAddStudentModal()"
                             class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
@@ -340,7 +334,7 @@
         </div>
     </div>
 
-    <!-- Edit Student Modal (Structure - Content loaded by JS) -->
+    <!-- Edit Student Modal -->
     <div id="editStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="editStudentModalTitle" role="dialog" aria-modal="true">
          <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="editStudentDialog">
             <form id="editStudentForm" data-student-id="" class="flex flex-col flex-1 overflow-hidden">
@@ -364,7 +358,6 @@
                             <label for="editStudentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
                             <select id="editStudentClass" name="classId" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                 <option value="" disabled>Loading classes...</option>
-                                <!-- Options populated by showEditStudentModal in script.js -->
                             </select>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -379,10 +372,8 @@
                                 <p id="rollNumberDuplicateError" class="hidden text-xs text-red-600 mt-1">Roll Number already exists</p>
                             </div>
                          </div>
-                         <!-- Campus Dropdown -->
                         <div>
                             <label for="editStudentCampus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
-                             <!-- UPDATED ID and name -->
                             <select id="editStudentCampus" name="campus" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                 <option value="" disabled>Select Campus</option>
                                 {% for campus_option in ALL_CAMPUSES %}
@@ -394,12 +385,10 @@
                             <label for="editStudentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
                             <input type="tel" id="editStudentParentPhone" name="parentPhone" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
                         </div>
-                        <!-- Skill Sliders -->
                         <div class="mt-4 pt-4 border-t">
                             <h4 class="text-md font-semibold text-gray-800 mb-3">Skill Ratings (1-5)</h4>
                             <div class="space-y-3" id="skillRatingInputs">
                                 {% for skill_name in DEFAULT_SKILLS %}
-                                 {# Generate unique IDs based on skill name and 'Edit' context #}
                                 {% set clean_skill_name = skill_name.replace(' ', '_').replace('&', 'and') %}
                                 {% set input_id = "skillRatingEdit-" ~ clean_skill_name %}
                                 {% set value_id = "skillValueEdit-" ~ clean_skill_name %}
@@ -407,9 +396,9 @@
                                     <label for="{{ input_id }}" class="block text-sm font-medium text-gray-700 mb-1">{{ skill_name }}</label>
                                     <div class="flex items-center space-x-3">
                                         <input type="range" id="{{ input_id }}"
-                                               min="1" max="5" step="1" value="1" {# Default value 1 #}
+                                               min="1" max="5" step="1" value="1"
                                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 skill-slider"
-                                               data-skill-name="{{ skill_name }}" {# Use original skill name for JS #}
+                                               data-skill-name="{{ skill_name }}"
                                                oninput="document.getElementById('{{ value_id }}').textContent = this.value">
                                         <span id="{{ value_id }}" class="text-sm font-medium text-gray-700 w-4 text-center">1</span>
                                     </div>
@@ -421,26 +410,19 @@
                      <p class="text-xs text-gray-500 mt-4">* Required fields</p>
                      <p id="editStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
                 </div>
-                 <!-- **** UPDATED: Responsive Footer for Edit Student Modal **** -->
                  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0 gap-3">
-                     <!-- Delete Button: Order 3 on mobile, 1 on sm+ -->
                      <button type="button" onclick="deleteStudent(document.getElementById('editStudentForm').dataset.studentId)"
                              class="w-full sm:w-auto order-3 sm:order-1 px-5 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 hover:border-red-400 transition-colors inline-flex items-center justify-center">
                          <i class="fas fa-trash-alt mr-2"></i>Delete Student
                      </button>
-                     <!-- Group for Cancel/Save: Order 1+2 on mobile, 2 on sm+ -->
-                     <!-- Stacks vertically on mobile (flex-col), row on sm+ (sm:flex-row) -->
                      <div class="flex flex-col sm:flex-row sm:space-x-3 gap-3 sm:gap-0 w-full sm:w-auto order-1 sm:order-2">
-                         <!-- Cancel Button: Order 2 on mobile -->
                          <button type="button" onclick="closeEditStudentModal()" class="w-full sm:w-auto px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors order-2 sm:order-1">Cancel</button>
-                         <!-- Save Button: Order 1 on mobile -->
                          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center justify-center disabled:opacity-50 order-1 sm:order-2">
                              <i class="fas fa-save mr-2"></i>Save Changes
                              <i class="fas fa-spinner fa-spin ml-2 hidden" id="editStudentLoading"></i>
                          </button>
                      </div>
                  </div>
-                 <!-- **** END UPDATED **** -->
             </form>
         </div>
     </div>
@@ -459,7 +441,7 @@
                      <div class="space-y-4">
                          <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                              <h4 class="font-semibold text-blue-800 mb-2">Step 1: Download Template</h4>
-                             <p class="text-sm text-blue-700 mb-3">Download the template CSV and fill it with student data. Ensure 'Class Name', 'Section', and 'Campus' match existing classes exactly (case-insensitive). Use unique UIDs and emails.</p>
+                             <p class="text-sm text-blue-700 mb-3">Download the template CSV and fill it with student data.</p>
                              <a href="{{ url_for('export_student_template') }}"
                                 class="inline-flex items-center px-4 py-2 bg-white text-blue-700 border border-blue-300 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
                                  <i class="fas fa-download mr-2"></i>Download Template
@@ -467,7 +449,7 @@
                          </div>
                          <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
                              <h4 class="font-semibold text-green-800 mb-2">Step 2: Upload Completed File</h4>
-                             <p class="text-sm text-green-700 mb-3">Upload the completed CSV. The system checks for duplicate UIDs and emails. Invalid rows will be skipped.</p>
+                             <p class="text-sm text-green-700 mb-3">Upload the completed CSV. Invalid rows will be skipped.</p>
                              <div>
                                  <label for="studentCsvFile" class="block text-sm font-medium text-gray-700 mb-1">CSV File *</label>
 
@@ -512,7 +494,7 @@
                          </h3>
                          <div class="mt-2">
                              <p class="text-sm text-gray-500">
-                                 Are you sure you want to reset all application data (students, classes, assignments, grades)? This action cannot be undone and will restore the initial default data.
+                                 Are you sure you want to reset all application data? This action cannot be undone.
                              </p>
                          </div>
                      </div>
@@ -530,8 +512,9 @@
             </div>
         </div>
     </div>
+    {% endif %} <!-- End of Admin Only Modals -->
 
-    <!-- **** ADDED Add Assignment Modal **** -->
+    <!-- **** ADDED Add Assignment Modal (Available to Faculty and Admin) **** -->
     <div id="addAssignmentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addAssignmentModalTitle" role="dialog" aria-modal="true">
          <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addAssignmentDialog">
             <form id="addAssignmentForm" onsubmit="return false;">
@@ -612,11 +595,9 @@
             </form>
         </div>
     </div>
-     <!-- **** END Add Assignment Modal **** -->
-
+    <!-- **** END Add Assignment Modal **** -->
 
     <!-- --- END Global Modals --- -->
-
 
     <!-- Link to external JavaScript -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
@@ -630,20 +611,14 @@
         if (typeof window.showToast === 'undefined') {
             window.showToast = function(message, type = 'info') {
                 console.warn("showToast fallback:", type.toUpperCase(), message);
-                // Simple alert fallback (consider a better inline fallback if needed)
-                // alert(`${type.toUpperCase()}: ${message}`);
             };
         }
-        // Ensure necessary functions exist if script.js fails to load
          if (typeof window.showAddAssignmentModal === 'undefined') {
              window.showAddAssignmentModal = () => showToast('Error: Add Assignment function not loaded.', 'error');
          }
          if (typeof window.closeAddAssignmentModal === 'undefined') {
              window.closeAddAssignmentModal = () => console.error('closeAddAssignmentModal not loaded');
          }
-         // Add fallbacks for other modal functions if needed...
-
     </script>
 </body>
 </html>
-

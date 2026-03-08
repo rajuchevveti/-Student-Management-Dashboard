@@ -6803,5 +6803,37 @@
       "s374": 60,
       "s400": 50
     }
-  }
+  },
+  "users": [
+    {
+      "id": "u1",
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin",
+      "name": "Super Admin"
+    },
+    {
+      "id": "u2",
+      "username": "teacher",
+      "password": "teacher123",
+      "role": "faculty",
+      "name": "Demo Faculty"
+    }
+  ],
+  "feedbacks": [
+    {
+      "id": "fb1",
+      "uid": "UID1001",
+      "faculty_id": "u2",
+      "ratings": {
+        "knowledge": 4,
+        "communication": 2,
+        "approachability": 4,
+        "punctuality": 3,
+        "practical": 4
+      },
+      "comment": "need to improve",
+      "date": "2026-03-08 13:52:49"
+    }
+  ]
 }

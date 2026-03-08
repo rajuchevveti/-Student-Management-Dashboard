@@ -12,3 +12,15 @@ How to Push Updates to the Live Web Server (Railway)
 git add .
 git commit -m "Updated app.py for Railway persistent storage and added grade download feature"
 git push origin main
+
+login creditnials
+
+Log in as Admin
+
+admin
+admin123
+
+Log in as Faculty
+
+teacher
+teacher123
