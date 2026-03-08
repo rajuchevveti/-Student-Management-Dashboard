@@ -2,9 +2,18 @@
 
 {% block title %}Faculty Insights - Robotics Academy{% endblock %}
 {% block page_title %}Faculty Insights{% endblock %}
-{% block page_subtitle %}Review student feedback and monitor faculty performance metrics{% endblock %}
+{% block page_subtitle %}Review student feedback and manage faculty accounts{% endblock %}
 
 {% block content %}
+<!-- Header Actions -->
+<div class="flex justify-end mb-6">
+    <!-- UPDATED ONCLICK: Removed scale/opacity inline classes for reliability -->
+    <button onclick="document.getElementById('addFacultyModal').classList.remove('hidden');"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center shadow-sm">
+        <i class="fas fa-user-plus mr-2"></i>Add Faculty
+    </button>
+</div>
+
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
     {% for insight in insights %}
     <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
@@ -17,7 +26,8 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-gray-800">{{ insight.faculty.name }}</h2>
-                    <p class="text-sm text-gray-500 font-medium">{{ insight.total_reviews }} Total Reviews submitted</p>
+                    <p class="text-sm text-gray-500 font-medium">Username: <span class="text-gray-700">{{ insight.faculty.username }}</span></p>
+                    <p class="text-xs text-gray-400 mt-1">{{ insight.total_reviews }} Total Reviews submitted</p>
                 </div>
             </div>
             
@@ -97,8 +107,126 @@
     <div class="col-span-full bg-white rounded-xl shadow-md border border-gray-100 p-12 text-center text-gray-500">
         <i class="fas fa-users-slash text-5xl mb-4 text-gray-300"></i>
         <h2 class="text-xl font-bold text-gray-700 mb-2">No Faculty Found</h2>
-        <p>Please add faculty accounts in your database to start collecting feedback.</p>
+        <p>Please add faculty accounts to start collecting feedback.</p>
     </div>
     {% endfor %}
 </div>
+
+<!-- Add Faculty Modal -->
+<!-- UPDATED MODAL CLASSES: Removed transition classes that were causing issues -->
+<div id="addFacultyModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full flex flex-col" id="addFacultyDialog">
+        <form id="addFacultyForm" class="flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800">Add New Faculty</h3>
+                <button type="button" onclick="closeFacultyModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 space-y-4">
+                <div id="facultyError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center mb-4">
+                    <i class="fas fa-exclamation-circle mr-2"></i><span id="facultyErrorText"></span>
+                </div>
+
+                <div>
+                    <label for="facultyName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input type="text" id="facultyName" required placeholder="e.g., John Doe" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+                
+                <div>
+                    <label for="facultyUsername" class="block text-sm font-medium text-gray-700 mb-1">Login Username *</label>
+                    <input type="text" id="facultyUsername" required placeholder="e.g., jdoe" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <p class="text-xs text-gray-500 mt-1">They will use this to log into the dashboard.</p>
+                </div>
+
+                <div>
+                    <label for="facultyPassword" class="block text-sm font-medium text-gray-700 mb-1">Temporary Password *</label>
+                    <input type="text" id="facultyPassword" required placeholder="e.g., robotics2024" class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                <button type="button" onclick="closeFacultyModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" id="submitFacultyBtn" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
+                    <span>Create Account</span>
+                    <i id="facultyLoadingIcon" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // UPDATED FUNCTION: Simplified to just toggle the hidden class
+    function closeFacultyModal() {
+        document.getElementById('addFacultyModal').classList.add('hidden');
+        document.getElementById('addFacultyForm').reset();
+        document.getElementById('facultyError').classList.add('hidden');
+    }
+
+    document.getElementById('addFacultyForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitFacultyBtn');
+        const loadingIcon = document.getElementById('facultyLoadingIcon');
+        const errorDiv = document.getElementById('facultyError');
+        const errorText = document.getElementById('facultyErrorText');
+        
+        const payload = {
+            name: document.getElementById('facultyName').value.trim(),
+            username: document.getElementById('facultyUsername').value.trim(),
+            password: document.getElementById('facultyPassword').value.trim()
+        };
+
+        if(!payload.name || !payload.username || !payload.password) {
+            errorText.textContent = "All fields are required.";
+            errorDiv.classList.remove('hidden');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-75');
+        loadingIcon.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+
+        try {
+            const response = await fetch('/api/add_faculty', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Optionally show a toast here if you have that function globally available
+                if (typeof showToast === 'function') {
+                    showToast('Faculty account created successfully!', 'success');
+                }
+                closeFacultyModal();
+                // Reload to show the new faculty member in the list
+                setTimeout(() => window.location.reload(), 500); 
+            } else {
+                errorText.textContent = result.message || "An error occurred.";
+                errorDiv.classList.remove('hidden');
+            }
+        } catch (err) {
+            errorText.textContent = "Network error. Please try again.";
+            errorDiv.classList.remove('hidden');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-75');
+            loadingIcon.classList.add('hidden');
+        }
+    });
+</script>
 {% endblock %}

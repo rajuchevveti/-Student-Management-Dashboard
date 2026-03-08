@@ -38,23 +38,21 @@ def admin_required(f):
             # If it's an API request, return JSON error
             if request.path.startswith('/api/') or request.method == 'POST':
                 return jsonify({'success': False, 'message': 'Admin privileges required to perform this action.'}), 403
-            # If it's a page request, just return an error text (we can add a fancy error page later)
+            # If it's a page request, just return an error text
             return "403 Forbidden: You need Administrator privileges to view this page.", 403
         return f(*args, **kwargs)
     return decorated_function
 
 # --- Constants ---
-# Check if the Railway volume exists; if so, use it. Otherwise, use the local file.
 if os.path.exists('/app/data'):
     DATA_FILE = '/app/data/data.json'
 else:
     DATA_FILE = 'data.json'
 
-# UPDATED: Use specific grade names and add CAMPUSES constant
 CLASSES = ['6th', '7th', '8th', '9th']
 SECTIONS = ['Tata', 'Google', 'Infosys', 'Mahindra', 'Intel', 'Adobe', 'Verizon']
-CAMPUSES = ['Yamuna Campus', 'Subhash Nagar Campus'] # Use only these campuses
-DEFAULT_CAMPUS = 'Yamuna Campus' # Default for new/imported students
+CAMPUSES = ['Yamuna Campus', 'Subhash Nagar Campus']
+DEFAULT_CAMPUS = 'Yamuna Campus'
 
 ASSIGNMENT_TYPES = ['Project', 'Quiz', 'Lab', 'Homework', 'Exam', 'Participation', 'Assessment', 'Test', 'Other']
 ASSESSMENT_FILTER_TYPES = ['Quiz', 'Exam', 'Assessment', 'Test']
@@ -79,8 +77,6 @@ SECTION_COLOR_MAP = {
 }
 DEFAULT_DATE_SORT_KEY = "9999-12-31"
 
-# --- NEW: Default Skills Constant ---
-# Define a standard list of skills for new students
 DEFAULT_SKILLS = {
     "Concept Understanding": 1,
     "Practical Implementation": 1,
@@ -88,7 +84,6 @@ DEFAULT_SKILLS = {
     "Communication": 1
 }
 
-# Pass default skills and campuses to Jinja environment
 @app.context_processor
 def inject_global_constants():
     return dict(
@@ -116,7 +111,6 @@ def ensure_data_structure(data):
     if not isinstance(data, dict):
         return create_default_data()
     
-    # Added 'feedbacks' to required keys
     required_keys = {'classes': [], 'students': [], 'alerts': [], 'assignments': [], 'grades': {}, 'users': [], 'feedbacks': []}
     needs_save = False
     
@@ -137,7 +131,6 @@ def ensure_data_structure(data):
                 data[key] = valid_items
                 needs_save = True
 
-    # --- NEW: Auto-create Admin user if missing ---
     has_admin = any(isinstance(u, dict) and u.get('role') == 'admin' for u in data.get('users', []))
     if not has_admin:
         data['users'].append({
@@ -156,20 +149,16 @@ def ensure_data_structure(data):
         })
         needs_save = True
 
-    # --- Skill Data Migration ---
     for student in data.get('students', []):
         if isinstance(student, dict) and isinstance(student.get('skills'), list):
-            print(f"Migrating skills for student: {student.get('id')}")
             student['skills'] = DEFAULT_SKILLS.copy()
             needs_save = True
         elif isinstance(student, dict) and not isinstance(student.get('skills'), dict):
             student['skills'] = DEFAULT_SKILLS.copy()
             needs_save = True
         
-        # --- Campus Data Migration ---
         if isinstance(student, dict) and student.get('campus') == 'Main Campus':
-            print(f"Migrating campus for student: {student.get('id')}")
-            student['campus'] = DEFAULT_CAMPUS # Default to Yamuna Campus
+            student['campus'] = DEFAULT_CAMPUS
             needs_save = True
         elif isinstance(student, dict) and not student.get('campus'):
             student['campus'] = DEFAULT_CAMPUS
@@ -177,30 +166,25 @@ def ensure_data_structure(data):
             
     for cls in data.get('classes', []):
         if isinstance(cls, dict) and cls.get('campus') == 'Main Campus':
-            print(f"Migrating campus for class: {cls.get('id')}")
             cls['campus'] = DEFAULT_CAMPUS
             needs_save = True
         elif isinstance(cls, dict) and not cls.get('campus'):
             cls['campus'] = DEFAULT_CAMPUS
             needs_save = True
     
-    # --- Assignment Data Migration (Groups assignments) ---
     for assignment in data.get('assignments', []):
         if isinstance(assignment, dict) and 'classId' in assignment:
-            print(f"Migrating assignment: {assignment.get('id')}")
-            class_id = assignment.pop('classId') # Remove old key
+            class_id = assignment.pop('classId')
             if class_id:
-                assignment['classIds'] = [class_id] # Add new key as a list
+                assignment['classIds'] = [class_id]
             else:
                 assignment['classIds'] = []
             needs_save = True
         
-    # --- Auto-sync Student Photos by UID ---
     PHOTO_DIR_NAME = 'student_photos'
     PHOTO_DIR_PATH = os.path.join(app.static_folder, PHOTO_DIR_NAME)
     
     if os.path.exists(PHOTO_DIR_PATH):
-        print(f"Syncing photos from {PHOTO_DIR_PATH}...")
         found_photos = {}
         try:
             for filename in os.listdir(PHOTO_DIR_PATH):
@@ -209,7 +193,7 @@ def ensure_data_structure(data):
                     student_uid = os.path.splitext(filename)[0].lower()
                     found_photos[student_uid] = filename
         except Exception as e:
-            print(f"Warning: Could not scan photo directory: {e}")
+            pass
 
         if found_photos:
             students_list = data.get('students', [])
@@ -221,15 +205,13 @@ def ensure_data_structure(data):
                         if student_uid_lower in found_photos:
                             new_photo_path = f"/static/{PHOTO_DIR_NAME}/{found_photos[student_uid_lower]}"
                             if student.get('photo') != new_photo_path:
-                                print(f"Updating photo for student UID {student_uid_from_data}: {new_photo_path}")
                                 student['photo'] = new_photo_path
                                 needs_save = True
     else:
         try:
             os.makedirs(PHOTO_DIR_PATH)
-            print(f"Created photo directory: {PHOTO_DIR_PATH}")
         except Exception as e:
-            print(f"Warning: Could not create photo directory: {e}")
+            pass
 
     if needs_save:
         save_data(data)
@@ -238,7 +220,6 @@ def ensure_data_structure(data):
 def create_default_data():
     default_data = {"classes": [], "students": [], "alerts": [], "assignments": [], "grades": {}, "users": [], "feedbacks": []}
     
-    # Generate default Users
     default_data["users"] = [
         {"id": "u1", "username": "admin", "password": "admin123", "role": "admin", "name": "Super Admin"},
         {"id": "u2", "username": "teacher", "password": "teacher123", "role": "faculty", "name": "Demo Faculty"}
@@ -251,12 +232,12 @@ def create_default_data():
             c_id = f"c{class_id_c}"
             class_data = {
                 "id": c_id,
-                "name": f"Grade {grade}", # Use full name
+                "name": f"Grade {grade}",
                 "section": section,
                 "studentCount": 5,
                 "color": SECTION_COLOR_MAP.get(section, 'bg-gray-500'),
-                "grade": grade, # Store simple grade name
-                "campus": DEFAULT_CAMPUS # Use default campus
+                "grade": grade,
+                "campus": DEFAULT_CAMPUS
             }
             default_data["classes"].append(class_data)
             for i in range(1, 6):
@@ -271,7 +252,7 @@ def create_default_data():
                     "lastMilestone": "Initial Setup",
                     "uid": f"UID{1000 + student_id_c}",
                     "rollNumber": f"ROLL{student_id_c:03d}",
-                    "campus": DEFAULT_CAMPUS, # Use default campus
+                    "campus": DEFAULT_CAMPUS,
                     "photo": f"/static/avatars/student{(student_id_c % 5) + 1}.jpg",
                     "parentPhone": "+91 98765 43210",
                     "joinDate": datetime.now().strftime('%Y-%m-%d'),
@@ -288,15 +269,14 @@ def create_default_data():
         {"id": "a3", "studentId": "s25", "classId": "c5", "issue": "Project 'RoboDesign' overdue", "type": "assignment"}
     ]
     default_data["assignments"] = [
-        # Use new 'classIds' list format
         {"id": "as1", "classIds": ["c1"], "title": "Intro Circuit Lab", "dueDate": (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d'), "totalPoints": 50, "type": "Lab"},
         {"id": "as2", "classIds": ["c1", "c2"], "title": "Unit 1 Test", "dueDate": (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d'), "totalPoints": 100, "type": "Test"},
         {"id": "as3", "classIds": ["c3"], "title": "Algorithm Quiz", "dueDate": (datetime.now() + timedelta(days=9)).strftime('%Y-%m-%d'), "totalPoints": 20, "type": "Quiz"}
     ]
     default_data["grades"] = {
-        "as1": {"s1": 40, "s2": 45, "s3": 35}, # Grades for as1
-        "as2": {"s1": 78, "s2": 85, "s4": 91, "s6": 72}, # Grades for as2 (students from c1 and c2)
-        "as3": {"s11": 15, "s12": 18} # Grades for as3
+        "as1": {"s1": 40, "s2": 45, "s3": 35},
+        "as2": {"s1": 78, "s2": 85, "s4": 91, "s6": 72},
+        "as3": {"s11": 15, "s12": 18}
     }
     save_data(default_data)
     return default_data
@@ -340,17 +320,15 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        # Load user database
         data = load_data()
         users = data.get('users', [])
         
-        # Find matching user
         user = next((u for u in users if isinstance(u, dict) and u.get('username') == username and u.get('password') == password), None)
         
         if user:
             session['logged_in'] = True
             session['username'] = user.get('username')
-            session['role'] = user.get('role', 'faculty') # Default to faculty if no role assigned
+            session['role'] = user.get('role', 'faculty')
             session['name'] = user.get('name', username)
             return redirect(request.args.get('next') or url_for('dashboard'))
         else:
@@ -360,14 +338,12 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.clear() # Clears the login state
+    session.clear()
     return redirect(url_for('login'))
 
-# --- NEW: Public Feedback Routes ---
 @app.route('/feedback', methods=['GET'])
 def feedback_form():
     data = load_data()
-    # Get only faculty users to populate the dropdown
     faculty_list = [u for u in data.get('users', []) if isinstance(u, dict) and u.get('role') == 'faculty']
     return render_template('feedback.html', faculty_members=faculty_list)
 
@@ -384,17 +360,14 @@ def submit_feedback():
     if not uid or not faculty_id or not ratings:
         return jsonify({'success': False, 'message': 'Missing required fields.'}), 400
         
-    # Verify student exists by checking the UID
     student = next((s for s in data.get('students', []) if isinstance(s, dict) and s.get('uid', '').lower() == uid.lower()), None)
     if not student:
         return jsonify({'success': False, 'message': 'Invalid Student UID. Please check and try again.'}), 400
         
-    # Check if student already submitted feedback for THIS specific faculty
     existing_feedback = next((f for f in data.get('feedbacks', []) if f.get('uid', '').lower() == uid.lower() and f.get('faculty_id') == faculty_id), None)
     if existing_feedback:
         return jsonify({'success': False, 'message': 'You have already submitted an evaluation for this instructor.'}), 400
 
-    # Create the feedback record
     new_feedback = {
         'id': f"fb{len(data.get('feedbacks', [])) + 1}",
         'uid': uid,
@@ -412,7 +385,6 @@ def submit_feedback():
     
     return jsonify({'success': True, 'message': 'Thank you for your feedback!'})
 
-# --- NEW: Admin Faculty Insights Route ---
 @app.route('/faculty_insights')
 @admin_required
 def faculty_insights():
@@ -425,7 +397,6 @@ def faculty_insights():
 
     for faculty in faculty_list:
         f_id = faculty.get('id')
-        # Get all feedback for this specific teacher
         f_feedbacks = [fb for fb in feedbacks if isinstance(fb, dict) and fb.get('faculty_id') == f_id]
         
         if not f_feedbacks:
@@ -438,7 +409,6 @@ def faculty_insights():
             })
             continue
         
-        # Calculate sums
         sums = {cat: 0 for cat in categories}
         for fb in f_feedbacks:
             ratings = fb.get('ratings', {})
@@ -446,14 +416,8 @@ def faculty_insights():
                 sums[cat] += int(ratings.get(cat, 0))
         
         count = len(f_feedbacks)
-        
-        # Calculate specific averages
         averages = {cat: round(sums[cat] / count, 1) for cat in categories}
-        
-        # Calculate overall rating across all categories
         overall_avg = round(sum(averages.values()) / len(categories), 1)
-        
-        # Pull out comments
         comments = [{'text': fb.get('comment'), 'date': fb.get('date')} for fb in f_feedbacks if fb.get('comment')]
         
         insights.append({
@@ -465,6 +429,52 @@ def faculty_insights():
         })
 
     return render_template('faculty_insights.html', insights=insights)
+
+# --- NEW: Add Faculty API ---
+@app.route('/api/add_faculty', methods=['POST'])
+@admin_required
+def add_faculty():
+    data = load_data()
+    faculty_data = request.json
+    
+    name = faculty_data.get('name', '').strip()
+    username = faculty_data.get('username', '').strip()
+    password = faculty_data.get('password', '').strip()
+    
+    if not name or not username or not password:
+        return jsonify({'success': False, 'message': 'All fields are required.'}), 400
+        
+    # Prevent duplicate usernames
+    if any(isinstance(u, dict) and u.get('username') == username for u in data.get('users', [])):
+        return jsonify({'success': False, 'message': f'Username "{username}" is already taken.'}), 400
+        
+    # Generate new user ID
+    highest_id_num = 0
+    for u in data.get('users', []):
+        if isinstance(u, dict) and u.get('id', '').startswith('u'):
+            try:
+                num = int(u['id'][1:])
+                highest_id_num = max(highest_id_num, num)
+            except ValueError:
+                continue
+    new_user_id = f"u{highest_id_num + 1}"
+    
+    new_faculty = {
+        'id': new_user_id,
+        'username': username,
+        'password': password,
+        'role': 'faculty',
+        'name': name
+    }
+    
+    if 'users' not in data:
+        data['users'] = []
+        
+    data['users'].append(new_faculty)
+    save_data(data)
+    
+    return jsonify({'success': True, 'message': 'Faculty account created successfully!'})
+
 
 @app.route('/')
 @login_required

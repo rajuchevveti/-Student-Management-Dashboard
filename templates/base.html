@@ -6,6 +6,8 @@
     <title>{% block title %}Robotics Academy{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Link to style.css using url_for -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -18,18 +20,16 @@
 
     <div class="flex"> <!-- Use flex container for sidebar + main content -->
         <!-- Sidebar -->
-        <!-- Start collapsed (or remove 'collapsed' to start open by default) -->
         <div id="sidebar" class="sidebar collapsed">
             <!-- Logo Area -->
             <div class="sidebar-logo">
-                <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content items-center"> <!-- Added items-center for vertical alignment -->
-                    <!-- Replace Robot Icon with your Logo Image -->
-                    <img src="{{ url_for('static', filename='kos_logo.png') }}" alt="KOS Logo" class="h-8 w-auto mr-2 logo-image"> <!-- Adjust h-8 (height) and mr-2 (margin) as needed -->
+                <a href="{{ url_for('dashboard') }}" class="sidebar-logo-content items-center">
+                    <img src="{{ url_for('static', filename='kos_logo.png') }}" alt="KOS Logo" class="h-8 w-auto mr-2 logo-image">
 
                     <!-- Container for Text Lines -->
                     <div class="flex flex-col logo-text-container">
-                        <span class="logo-text font-bold text-lg leading-tight">K O S</span> <!-- Main Title: KOS -->
-                        <span class="logo-subtitle text-xs text-blue-200 leading-tight block">Kakatiya Olympiad School</span> <!-- Subtitle -->
+                        <span class="logo-text font-bold text-lg leading-tight">K O S</span>
+                        <span class="logo-subtitle text-xs text-blue-200 leading-tight block">Kakatiya Olympiad School</span>
                     </div>
                 </a>
             </div>
@@ -50,17 +50,20 @@
                             <i class="fas fa-clipboard-list"></i>
                             <span class="nav-text">Assignments</span>
                         </a>
-                        {# --- Link: Gradebook --- #}
                         <a href="{{ url_for('gradebook') }}" class="nav-item {% if request.endpoint == 'gradebook' %}active{% endif %}" data-tooltip="Gradebook">
-                            <i class="fas fa-edit"></i> {# Changed icon #}
+                            <i class="fas fa-edit"></i>
                             <span class="nav-text">Gradebook</span>
                         </a>
                         
-                        <!-- Role-based Access for Admin Links -->
                         {% if session.get('role') == 'admin' %}
                         <a href="{{ url_for('faculty_insights') }}" class="nav-item {% if request.endpoint == 'faculty_insights' %}active{% endif %}" data-tooltip="Faculty Insights">
                             <i class="fas fa-star-half-alt"></i>
                             <span class="nav-text">Faculty Insights</span>
+                        </a>
+                        <!-- Trigger for QR Code Modal -->
+                        <a href="javascript:void(0)" onclick="showFeedbackQR()" class="nav-item" data-tooltip="Feedback QR">
+                            <i class="fas fa-qrcode"></i>
+                            <span class="nav-text">Feedback QR</span>
                         </a>
                          <a href="#" id="manageClassesButton" class="nav-item" data-tooltip="Manage Classes">
                             <i class="fas fa-school"></i>
@@ -74,18 +77,17 @@
                     </div>
                 </nav>
 
-                <!-- User Profile Section -->
+                <!-- User Profile Section (Sidebar) -->
                 <div class="admin-user">
-                    <a href="#" class="admin-link">
+                    <div class="admin-link">
                         <div class="admin-avatar">
                             <i class="fas fa-user text-white text-sm"></i>
                         </div>
                         <div class="admin-info">
-                            <!-- UPDATED to use session username dynamically -->
                             <span class="admin-name">{{ session.get('name', 'User') }}</span>
                             <span class="admin-role">{{ 'Administrator' if session.get('role') == 'admin' else 'Faculty' }}</span>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,7 +99,7 @@
                 <div class="header-left">
                     <!-- Hamburger Toggle Button -->
                     <button id="sidebarToggle" class="hamburger-toggle-btn">
-                        <i id="toggleIcon" class="fas fa-bars"></i> <!-- Icon changes via JS -->
+                        <i id="toggleIcon" class="fas fa-bars"></i>
                     </button>
                     <div class="header-title">
                         <h1 class="text-xl md:text-2xl font-semibold text-gray-800">{% block page_title %}Student Management Dashboard{% endblock %}</h1>
@@ -105,32 +107,33 @@
                     </div>
                 </div>
                  <div class="header-right">
-                    <!-- Student Search (Moved Here) -->
                     <div class="relative hidden md:block">
                         <input type="text" id="studentSearch" placeholder="Search students..."
                                class="pl-8 pr-4 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 lg:w-64">
                         <i class="fas fa-search text-gray-400 absolute top-1/2 left-2.5 transform -translate-y-1/2 text-xs"></i>
-                        <!-- Search Results Dropdown -->
                         <div id="searchResults" class="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 hidden max-h-60 overflow-y-auto">
-                            <!-- Results populated by script.js -->
                         </div>
                     </div>
 
-                    <!-- Notification Bell -->
                     <button class="notification-btn" aria-label="View notifications">
                         <i class="fas fa-bell"></i>
                         <span class="notification-dot"></span>
                     </button>
 
-                    <!-- **** UPDATED: Functional User Profile Dropdown **** -->
-                    <div class="relative group ml-2">
-                        <button class="flex items-center focus:outline-none cursor-pointer user-profile">
+                    <!-- User Profile Dropdown (Header) -->
+                    <div class="relative group ml-2 flex items-center h-full">
+                        <!-- Added flex h-full to the container to ensure the hover bridge is solid -->
+                        <button class="flex items-center focus:outline-none cursor-pointer user-profile py-2">
                             <i class="fas fa-user-circle text-blue-600 text-2xl mr-2"></i>
-                            <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ session.get('name', 'User') }} <i class="fas fa-chevron-down text-xs ml-1 text-gray-400"></i></span>
+                            <span class="text-sm font-medium text-gray-700 hidden sm:block">
+                                {{ session.get('name', 'User') }} 
+                                <i class="fas fa-chevron-down text-xs ml-1 text-gray-400 transition-transform group-hover:rotate-180"></i>
+                            </span>
                         </button>
                         
                         <!-- Dropdown Menu -->
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 hidden group-hover:block z-50 overflow-hidden">
+                        <!-- top-full ensures it starts exactly at the bottom of the group container -->
+                        <div class="absolute right-0 top-full w-48 bg-white rounded-xl shadow-lg border border-gray-100 hidden group-hover:block z-50 overflow-hidden">
                             <div class="py-1">
                                 <a href="{{ url_for('logout') }}" class="block px-4 py-3 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors flex items-center">
                                     <i class="fas fa-sign-out-alt mr-2"></i> Logout
@@ -138,7 +141,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- **** END UPDATED Dropdown **** -->
                 </div>
             </header>
 
@@ -150,27 +152,38 @@
         </div>
     </div>
 
-    <!-- --- GLOBAL MODALS --- -->
-    <!-- These modals are defined here in base.html so they are available on ALL pages -->
+    <!-- Global QR Code Modal -->
+    <div id="qrCodeModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full flex flex-col items-center p-8 text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Student Feedback QR</h3>
+            <p class="text-sm text-gray-500 mb-6">Students can scan this to open the evaluation form instantly.</p>
+            
+            <div id="qrcode" class="bg-white p-4 rounded-xl border-2 border-gray-100 shadow-inner mb-6"></div>
+            
+            <div class="flex flex-col w-full space-y-3">
+                <button onclick="window.print()" class="bg-blue-600 text-white py-2.5 rounded-lg font-bold hover:bg-blue-700 transition-colors flex items-center justify-center">
+                    <i class="fas fa-print mr-2"></i> Print QR Code
+                </button>
+                <button onclick="document.getElementById('qrCodeModal').classList.add('hidden')" class="text-gray-500 text-sm hover:text-gray-700 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
     {% if session.get('role') == 'admin' %}
     <!-- Admin Only Modals -->
-    <!-- Modal 1: Manage Classes -->
     <div id="manage-classes-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="manageClassesModalTitle" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="manageClassesDialog">
-            <!-- Header -->
             <div class="flex justify-between items-center p-5 border-b border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-800" id="manageClassesModalTitle">Manage Classes</h3>
                 <button type="button" onclick="closeManageClassesModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <!-- Content (Scrollable) -->
             <div id="classes-list" class="p-6 flex-1 overflow-y-auto space-y-3">
-                <!-- Class list will be populated here by script.js -->
                 <p class="p-4 text-center text-gray-500 text-sm">Loading classes...</p>
             </div>
-            <!-- Footer -->
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0 gap-3">
                 <button type="button" onclick="closeManageClassesModal()" class="w-full sm:w-auto px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                     Close
@@ -182,18 +195,15 @@
         </div>
     </div>
 
-    <!-- Modal 2: Add/Edit Class Form -->
     <div id="class-form-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="class-form-title" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="classFormDialog">
             <form id="class-form" class="flex flex-col flex-1 overflow-hidden">
-                <!-- Header -->
                 <div class="flex justify-between items-center p-5 border-b border-gray-200">
                     <h3 class="text-xl font-semibold text-gray-800" id="class-form-title">Add Class</h3>
                     <button type="button" onclick="closeClassFormModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close modal">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <!-- Content (Scrollable) -->
                 <div class="p-6 flex-1 overflow-y-auto space-y-4">
                     <input type="hidden" id="class-id" name="class-id">
                     <div>
@@ -213,7 +223,6 @@
                              {% endfor %}
                          </select>
                     </div>
-                    <!-- Visual Color Picker -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Color *</label>
                         <input type="hidden" id="class-color" name="color">
@@ -229,7 +238,6 @@
                     </div>
                     <p id="class-form-error" class="hidden text-sm text-red-600 mt-2"></p>
                 </div>
-                <!-- Footer -->
                 <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
                     <button type="button" onclick="closeClassFormModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                         Cancel
@@ -242,7 +250,6 @@
         </div>
     </div>
 
-     <!-- Add Student Modal -->
     <div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addStudentModalTitle" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="addStudentDialog">
             <form id="addStudentForm" class="flex flex-col flex-1 overflow-hidden">
@@ -334,7 +341,6 @@
         </div>
     </div>
 
-    <!-- Edit Student Modal -->
     <div id="editStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="editStudentModalTitle" role="dialog" aria-modal="true">
          <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="editStudentDialog">
             <form id="editStudentForm" data-student-id="" class="flex flex-col flex-1 overflow-hidden">
@@ -427,7 +433,6 @@
         </div>
     </div>
 
-     <!-- Import Students Modal -->
      <div id="importStudentsModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="importStudentsModalTitle" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="importStudentsDialog">
              <form id="importStudentsForm" enctype="multipart/form-data">
@@ -480,7 +485,6 @@
         </div>
     </div>
 
-    <!-- Reset Data Confirmation Modal -->
     <div id="resetModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="resetModalTitle" role="dialog" aria-modal="true">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="resetDialog">
              <div class="p-6">
@@ -512,9 +516,8 @@
             </div>
         </div>
     </div>
-    {% endif %} <!-- End of Admin Only Modals -->
+    {% endif %}
 
-    <!-- **** ADDED Add Assignment Modal (Available to Faculty and Admin) **** -->
     <div id="addAssignmentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addAssignmentModalTitle" role="dialog" aria-modal="true">
          <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="addAssignmentDialog">
             <form id="addAssignmentForm" onsubmit="return false;">
@@ -527,7 +530,6 @@
                     </div>
 
                     <div class="space-y-4">
-                         <!-- Class Selection Checkboxes -->
                          <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-sm font-medium text-gray-700">Assign to Classes *</label>
@@ -537,7 +539,6 @@
                                 </div>
                             </div>
                             <div id="assignmentClassList" class="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3 space-y-2 bg-gray-50">
-                                <!-- Checkboxes populated by script.js's refreshAssignmentClassCheckboxes -->
                                 <p class="text-sm text-gray-500">Loading classes...</p>
                             </div>
                             <p id="classSelectionError" class="text-red-600 text-xs mt-1 hidden">Please select at least one class.</p>
@@ -564,11 +565,9 @@
                             <label for="assignmentType" class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
                             <select id="assignmentType" name="type" required
                                     class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                                <!-- Use assignment_types from Flask context if available -->
                                 {% for type_option in assignment_types %}
                                 <option value="{{ type_option }}">{{ type_option }}</option>
                                 {% else %}
-                                 <!-- Fallback if not passed -->
                                 <option value="Homework">Homework</option>
                                 <option value="Quiz">Quiz</option>
                                 <option value="Project">Project</option>
@@ -580,7 +579,6 @@
                          <p class="text-xs text-gray-500 mt-4">* Required fields</p>
                     </div>
                 </div>
-                <!-- Footer Actions -->
                  <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
                     <button type="button" onclick="closeAddAssignmentModal()"
                             class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
@@ -588,26 +586,18 @@
                     </button>
                     <button type="submit"
                             class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center">
-                         <!-- Icons handled by setLoadingState -->
                          <span>Create Assignment</span>
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    <!-- **** END Add Assignment Modal **** -->
 
-    <!-- --- END Global Modals --- -->
-
-    <!-- Link to external JavaScript -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- Page-specific JavaScript -->
     {% block scripts %}{% endblock %}
 
-    <!-- Fallback for showToast if not defined in script.js -->
     <script>
-        // Ensure showToast exists globally, provide fallback if needed
         if (typeof window.showToast === 'undefined') {
             window.showToast = function(message, type = 'info') {
                 console.warn("showToast fallback:", type.toUpperCase(), message);
@@ -618,6 +608,31 @@
          }
          if (typeof window.closeAddAssignmentModal === 'undefined') {
              window.closeAddAssignmentModal = () => console.error('closeAddAssignmentModal not loaded');
+         }
+
+         // **** NEW: QR Code Logic ****
+         let qrInstance = null;
+         function showFeedbackQR() {
+             const modal = document.getElementById('qrCodeModal');
+             const qrContainer = document.getElementById('qrcode');
+             
+             // Get the feedback URL automatically based on current location
+             const feedbackUrl = window.location.origin + '/feedback';
+             
+             modal.classList.remove('hidden');
+             
+             // Clear previous QR code if any
+             qrContainer.innerHTML = '';
+             
+             // Generate QR Code
+             qrInstance = new QRCode(qrContainer, {
+                 text: feedbackUrl,
+                 width: 200,
+                 height: 200,
+                 colorDark : "#1e3a8a", // blue-900
+                 colorLight : "#ffffff",
+                 correctLevel : QRCode.CorrectLevel.H
+             });
          }
     </script>
 </body>

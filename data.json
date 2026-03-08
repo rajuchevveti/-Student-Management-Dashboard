@@ -6818,6 +6818,13 @@
       "password": "teacher123",
       "role": "faculty",
       "name": "Demo Faculty"
+    },
+    {
+      "id": "u3",
+      "username": "raju@gmail.com",
+      "password": "raju123",
+      "role": "faculty",
+      "name": "RAJU"
     }
   ],
   "feedbacks": [
@@ -6834,6 +6841,20 @@
       },
       "comment": "need to improve",
       "date": "2026-03-08 13:52:49"
+    },
+    {
+      "id": "fb2",
+      "uid": "UID1001",
+      "faculty_id": "u3",
+      "ratings": {
+        "knowledge": 5,
+        "communication": 5,
+        "approachability": 5,
+        "punctuality": 5,
+        "practical": 5
+      },
+      "comment": "excellent",
+      "date": "2026-03-08 14:03:13"
     }
   ]
 }
