@@ -19,7 +19,12 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # --- Constants ---
-DATA_FILE = 'data.json'
+# Check if the Railway volume exists; if so, use it. Otherwise, use the local file.
+if os.path.exists('/app/data'):
+    DATA_FILE = '/app/data/data.json'
+else:
+    DATA_FILE = 'data.json'
+
 # UPDATED: Use specific grade names and add CAMPUSES constant
 CLASSES = ['6th', '7th', '8th', '9th']
 SECTIONS = ['Tata', 'Google', 'Infosys', 'Mahindra', 'Intel', 'Adobe', 'Verizon']
@@ -1326,6 +1331,69 @@ def delete_assignment():
         return jsonify({'success': False, 'message': 'Assignment not found'}), 404
 # --- END UPDATED /delete_assignment route ---
 
+@app.route('/export_assignment_grades/<assignment_id>/<class_id>')
+def export_assignment_grades(assignment_id, class_id):
+    data = load_data()
+    
+    class_info = next((c for c in data.get('classes', []) if isinstance(c, dict) and c.get('id') == class_id), None)
+    assignment_info = next((a for a in data.get('assignments', []) if isinstance(a, dict) and a.get('id') == assignment_id), None)
+    
+    if not class_info or not assignment_info:
+        return "Class or Assignment not found", 404
+        
+    class_students = [s for s in data.get('students', []) if isinstance(s, dict) and s.get('classId') == class_id]
+    assignment_scores = data.get('grades', {}).get(assignment_id, {})
+    total_points = assignment_info.get('totalPoints', 100)
+    
+    # 1. Create a CSV file in memory
+    si = io.StringIO()
+    writer = csv.writer(si)
+    
+    # 2. Write the headers
+    writer.writerow([
+        'Student Name', 
+        'Email', 
+        'UID', 
+        'Roll Number', 
+        f'Score (Max {total_points})', 
+        'Percentage',
+        'Status'
+    ])
+    
+    # 3. Write the student data
+    for student in sorted(class_students, key=lambda s: s.get('name', '')):
+        student_id = student.get('id')
+        score = assignment_scores.get(student_id)
+        
+        score_str = str(score) if score is not None else 'N/A'
+        percentage_str = 'N/A'
+        status_str = 'Not Graded'
+        
+        if score is not None and total_points > 0:
+            percentage = round((score / total_points) * 100)
+            percentage_str = f"{percentage}%"
+            status_str = get_status_from_grade(percentage) # Reuses existing function
+        
+        writer.writerow([
+            student.get('name', ''),
+            student.get('email', ''),
+            student.get('uid', ''),
+            student.get('rollNumber', ''),
+            score_str,
+            percentage_str,
+            status_str
+        ])
+        
+    # 4. Create the final response
+    class_name_clean = f"{class_info.get('name', '')}_{class_info.get('section', '')}".replace(' ', '_')
+    assignment_title_clean = assignment_info.get('title', 'Assignment').replace(' ', '_')
+    
+    filename = f"{assignment_title_clean}_{class_name_clean}_Grades_{datetime.now().strftime('%Y%m%d')}.csv"
+    
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    output.headers["Content-type"] = "text/csv"
+    return output
 
 # --- UPDATED export_student_template route ---
 @app.route('/export/student_template_csv')
@@ -1565,6 +1633,5 @@ def reset_data():
 app.jinja_env.globals.update(get_status_from_grade=get_status_from_grade)
 
 if __name__ == '__main__':
-    load_data()
-    app.run(debug=True, host='0.0.0.0', port=5000)
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

@@ -1,0 +1,14 @@
+i woukld kike to add one featutre in this 
+
+like i need to add one page where students can rate a faculty based on diffrent categories and this help managemnt to focus on faculty tpoo, any best idea related to this new concept
+
+
+run commands 
+cd "D:\my files\RAJU PROJECTS\STUDENT MANAGEMNET DASHBOARD"
+venv\Scripts\activate
+python app.py
+
+How to Push Updates to the Live Web Server (Railway)
+git add .
+git commit -m "Updated app.py for Railway persistent storage and added grade download feature"
+git push origin main
