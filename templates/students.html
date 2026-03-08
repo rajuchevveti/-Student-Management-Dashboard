@@ -37,25 +37,30 @@
 {% endif %}
 <!-- End Import Status Message -->
 
-<!-- Header Actions -->
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-    <div>
-        <button onclick="showImportStudentsModal()"
-                class="bg-white text-gray-700 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-sm font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-            <i class="fas fa-file-upload mr-2"></i>Import Students
-        </button>
-    </div>
-    <div class="flex space-x-3 w-full md:w-auto justify-end">
+<!-- **** UPDATED: Header Actions **** -->
+<!-- Stacks all buttons on mobile (flex-col), row on medium+ (md:flex-row) -->
+<div class="flex flex-col md:flex-row justify-between items-center mb-6 md:mb-8 gap-3">
+    
+    <!-- Import Button: Full width on mobile, auto on md+. Order 2 on mobile, 1 on md+. -->
+    <button onclick="showImportStudentsModal()"
+            class="bg-white text-gray-700 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-sm font-medium flex items-center justify-center w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed order-2 md:order-1">
+        <i class="fas fa-file-upload mr-2"></i>Import Students
+    </button>
+    
+    <!-- Group for Back and Add: Full width on mobile, auto on md+. Order 1 on mobile, 2 on md+. -->
+<!-- Stacks vertically on mobile (flex-col), row on sm+ (sm:flex-row) -->
+    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 w-full md:w-auto justify-end order-1 md:order-2">
         <button onclick="window.location.href='{{ url_for('dashboard') }}'"
-                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center">
+                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center justify-center w-full sm:w-auto">
             <i class="fas fa-arrow-left mr-2"></i>Back
         </button>
         <button onclick="showAddStudentModal()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed">
             <i class="fas fa-user-plus mr-2"></i>Add Student
         </button>
     </div>
 </div>
+<!-- **** END UPDATED **** -->
 
 <!-- Search and Filters -->
 <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 mb-6 md:mb-8">
@@ -171,13 +176,13 @@
                     data-email="{{ student.email|lower }}"
                     data-uid="{{ student.uid|lower }}">
                     <td class="px-4 py-3 whitespace-nowrap">
-                         <!-- Ensure class matches script.js -->
+                         <!-- *** FIXED: Changed value from student.uid to student.id *** -->
                         <input type="checkbox" name="student_id" value="{{ student.id }}" class="student-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" aria-label="Select student {{ student.name }}">
                     </td>
                     <td class="px-4 md:px-6 py-3 whitespace-nowrap">
                         <div class="flex items-center">
                             
-                            <!-- **** NEW: Profile Picture or Initial **** -->
+                            <!-- **** UPDATED: Profile Picture or Initial **** -->
                             {% if student.photo %}
                                 <img src="{{ student.photo }}" 
                                      alt="{{ student.name }}" 
@@ -188,7 +193,7 @@
                                     <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?' }}</span>
                                 </div>
                             {% endif %}
-                            <!-- **** END NEW **** -->
+                            <!-- **** END UPDATED **** -->
 
                             <div>
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ student.name }}</p>
@@ -239,194 +244,13 @@
     </div>
 </div>
 
-<!-- Add Student Modal -->
-<div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="addStudentModalTitle" role="dialog" aria-modal="true">
-    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full transform transition-transform duration-300 ease-out scale-95 opacity-0 flex flex-col max-h-[90vh]" id="addStudentDialog">
-        <form id="addStudentForm" class="flex flex-col flex-1 overflow-hidden">
-            <!-- Header -->
-            <div class="flex justify-between items-center p-5 border-b border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-800" id="addStudentModalTitle">Add New Student</h3>
-                <button type="button" onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close add student modal">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Content (Scrollable) -->
-            <div class="p-6 flex-1 overflow-y-auto space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="studentName" name="name" required
-                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                               aria-required="true">
-                    </div>
-                    <div>
-                        <label for="studentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                        <input type="email" id="studentEmail" name="email" required
-                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                               aria-required="true">
-                    </div>
-                </div>
-
-                <!-- NEW: UID and Roll Number -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="studentUid" class="block text-sm font-medium text-gray-700 mb-1">UID *</label>
-                        <input type="text" id="studentUid" name="uid" required
-                               placeholder="e.g., KYC041JO"
-                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                               aria-required="true">
-                    </div>
-                    <div>
-                        <label for="studentRollNumber" class="block text-sm font-medium text-gray-700 mb-1">Roll Number *</label>
-                        <input type="text" id="studentRollNumber" name="rollNumber" required
-                               placeholder="e.g., ROLL101"
-                               class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                               aria-required="true">
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <label for="studentClass" class="block text-sm font-medium text-gray-700 mb-1">Class *</label>
-                    <select id="studentClass" name="classId" required
-                            class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            aria-required="true">
-                        <option value="" disabled selected>Select a class...</option>
-                        {# This list still needs to be populated dynamically via app.py or JS #}
-                        {% for cls in all_classes | sort(attribute='name') %}
-                        <option value="{{ cls.id }}">{{ cls.name }} - {{ cls.section }} ({{ cls.campus }})</option>
-                        {% endfor %}
-                    </select>
-                    <span id="studentClassLoading" class="hidden absolute right-3 top-10 text-gray-400">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </span>
-                </div>
-
-                <!-- Campus Dropdown (Updated) -->
-                <div>
-                    <label for="studentCampus" class="block text-sm font-medium text-gray-700 mb-1">Campus *</label>
-                    <select id="studentCampus" name="campus" required
-                            class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            aria-required="true">
-                        <option value="" disabled selected>Select a campus...</option>
-                        <option value="Yamuna Campus">Yamuna Campus</option>
-                        <option value="Subhash Nagar Campus">Subhash Nagar Campus</option>
-                        {# Removed Main Campus option #}
-                    </select>
-                </div>
-
-                <div>
-                    <label for="studentParentPhone" class="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
-                    <input type="tel" id="studentParentPhone" name="parentPhone"
-                           placeholder="+91 XXXXXXXXXX"
-                           class="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                           aria-describedby="phoneFormatHint">
-                    <p id="phoneFormatHint" class="text-xs text-gray-500 mt-1">Format: +91 XXXXXXXXXX</p>
-                </div>
-
-                <!-- REMOVED Skills text box -->
-
-                <p class="text-xs text-gray-500 mt-4">* Required fields</p>
-            </div>
-
-            <!-- Footer -->
-            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
-                <button type="button" onclick="closeAddStudentModal()"
-                        class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-                    <i class="fas fa-user-plus mr-2"></i>
-                    <span>Add Student</span>
-                    <i class="fas fa-spinner fa-spin ml-2 hidden" id="addStudentLoading"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Import Students Modal -->
-<div id="importStudentsModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4 transition-opacity duration-300 ease-out opacity-0" aria-labelledby="importStudentsModalTitle" role="dialog" aria-modal="true">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full transform transition-transform duration-300 ease-out scale-95 opacity-0" id="importStudentsDialog">
-        <form id="importStudentsForm"
-              {# Removed action and method, will be handled by JS #}
-              enctype="multipart/form-data">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-xl font-semibold text-gray-800" id="importStudentsModalTitle">Import Students via CSV</h3>
-                    <button type="button" onclick="closeImportStudentsModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close import students modal">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 class="font-semibold text-blue-800 mb-2">Step 1: Download Template</h4>
-                        <p class="text-sm text-blue-700 mb-3">Download the template CSV and fill it with student data. Ensure 'Class Name' and 'Section' match existing classes exactly (case-insensitive). Use unique UIDs and emails.</p>
-                        <a href="{{ url_for('export_student_template') }}"
-                           class="inline-flex items-center px-4 py-2 bg-white text-blue-700 border border-blue-300 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors">
-                            <i class="fas fa-download mr-2"></i>Download Template
-                        </a>
-                    </div>
-                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h4 class="font-semibold text-green-800 mb-2">Step 2: Upload Completed File</h4>
-                        <p class="text-sm text-green-700 mb-3">Upload the completed CSV. The system checks for duplicate UIDs and emails. Invalid rows will be skipped.</p>
-                        <div>
-                            <label for="studentCsvFile" class="block text-sm font-medium text-gray-700 mb-1">CSV File *</label>
-
-                            <label class="w-full flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <i class="fas fa-file-csv text-green-600 mr-3 text-lg"></i>
-                                <span id="csvFileName" class="text-sm text-gray-400">No file chosen</span>
-                                <input type="file" id="studentCsvFile" name="student_csv" required accept=".csv, text/csv" class="hidden"
-                                       aria-required="true">
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
-                <button type="button" onclick="closeImportStudentsModal()"
-                        class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-                    <i class="fas fa-file-upload mr-2"></i>
-                    <span>Upload and Import</span>
-                    <i class="fas fa-spinner fa-spin ml-2 hidden" id="importStudentsLoading"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+<!-- **** MODALS REMOVED **** -->
+<!-- All modals (addStudentModal, importStudentsModal) are now in base.html -->
 
 {% endblock %}
 
+<!-- **** SCRIPT BLOCK REMOVED **** -->
+<!-- All JavaScript is now handled by script.js, loaded in base.html -->
 {% block scripts %}
-<script>
-    // Utility function for debouncing
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- Elements ---
-        const searchInput = document.getElementById('searchInput');
-        const statusFilter = document.getElementById('statusFilter');
-        // New filter elements
-        const gradeFilter = document.getElementById('gradeFilter');
-        const sectionFilter = document.getElementById('sectionFilter');
-        const campusFilter = document.getElementById('campusFilter');
-        const studentRows = document.querySelectorAll('.student-row');
-
-    });
-</script>
+{# This block is now intentionally empty #}
 {% endblock %}

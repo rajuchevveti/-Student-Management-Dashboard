@@ -13,6 +13,7 @@
         <h2 class="text-xl font-bold text-gray-800">Select Class</h2>
         <!-- REMOVED Manage Classes Button -->
     </div>
+    <!-- **** UPDATED: Made grid responsive, added gaps **** -->
     <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Grade</label>
@@ -32,8 +33,9 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="flex items-end">
-            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+        <!-- **** UPDATED: Made button stack correctly on mobile **** -->
+        <div class="flex items-end mt-2 md:mt-0">
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center">
                 <i class="fas fa-filter mr-2"></i>Apply Filters
             </button>
         </div>
@@ -198,4 +200,3 @@
 -->
 
 {% endblock %}
-

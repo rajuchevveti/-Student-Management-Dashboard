@@ -154,11 +154,12 @@
                 <p class="p-4 text-center text-gray-500 text-sm">Loading classes...</p>
             </div>
             <!-- Footer -->
-            <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
-                <button type="button" onclick="closeManageClassesModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+            <!-- **** UPDATED: Added responsive classes for mobile **** -->
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0 gap-3">
+                <button type="button" onclick="closeManageClassesModal()" class="w-full sm:w-auto px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                     Close
                 </button>
-                <button type="button" id="add-class-btn" onclick="showAddClassModal()" class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors inline-flex items-center">
+                <button type="button" id="add-class-btn" onclick="showAddClassModal()" class="w-full sm:w-auto order-first sm:order-last px-5 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors inline-flex items-center justify-center">
                     <i class="fas fa-plus mr-2"></i>Add New Class
                 </button>
             </div>
@@ -420,19 +421,26 @@
                      <p class="text-xs text-gray-500 mt-4">* Required fields</p>
                      <p id="editStudentFormError" class="hidden text-sm text-red-600 mt-2"></p>
                 </div>
-                 <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0">
+                 <!-- **** UPDATED: Responsive Footer for Edit Student Modal **** -->
+                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl flex-shrink-0 gap-3">
+                     <!-- Delete Button: Order 3 on mobile, 1 on sm+ -->
                      <button type="button" onclick="deleteStudent(document.getElementById('editStudentForm').dataset.studentId)"
-                             class="px-5 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 hover:border-red-400 transition-colors inline-flex items-center">
+                             class="w-full sm:w-auto order-3 sm:order-1 px-5 py-2 border border-red-300 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 hover:border-red-400 transition-colors inline-flex items-center justify-center">
                          <i class="fas fa-trash-alt mr-2"></i>Delete Student
                      </button>
-                     <div class="space-x-3">
-                         <button type="button" onclick="closeEditStudentModal()" class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors">Cancel</button>
-                         <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center disabled:opacity-50">
+                     <!-- Group for Cancel/Save: Order 1+2 on mobile, 2 on sm+ -->
+                     <!-- Stacks vertically on mobile (flex-col), row on sm+ (sm:flex-row) -->
+                     <div class="flex flex-col sm:flex-row sm:space-x-3 gap-3 sm:gap-0 w-full sm:w-auto order-1 sm:order-2">
+                         <!-- Cancel Button: Order 2 on mobile -->
+                         <button type="button" onclick="closeEditStudentModal()" class="w-full sm:w-auto px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors order-2 sm:order-1">Cancel</button>
+                         <!-- Save Button: Order 1 on mobile -->
+                         <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors inline-flex items-center justify-center disabled:opacity-50 order-1 sm:order-2">
                              <i class="fas fa-save mr-2"></i>Save Changes
                              <i class="fas fa-spinner fa-spin ml-2 hidden" id="editStudentLoading"></i>
                          </button>
                      </div>
                  </div>
+                 <!-- **** END UPDATED **** -->
             </form>
         </div>
     </div>
@@ -638,5 +646,4 @@
     </script>
 </body>
 </html>
-
 

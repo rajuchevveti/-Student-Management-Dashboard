@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeAddStudentFormListener();
     initializeEditStudentFormListener(); // Contains skill-saving fix
     initializeImportStudentsFormListener();
-    initializeBulkStudentActions();
+    initializeBulkStudentActions(); // This initializes it for the /students page
     initializeClassManagement();
 
     // Debug: Log counts after initialization (optional)
@@ -322,11 +322,21 @@ function initializePageSpecificFeatures() {
         input.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
     });
     const currentPath = window.location.pathname;
-    if (document.getElementById('gradeDistributionChart')) console.log("Init Dashboard...");
-    else if (currentPath.startsWith('/class/')) initializeClassPage();
-    else if (window.location.pathname.startsWith('/assignments')) initializeAssignmentsPageFilters(); // << UPDATED to use this function name
-    else if (document.getElementById('searchInput') && currentPath.includes('/students')) initializeStudentPageFilters();
-    else if (document.getElementById('gradebookFilterForm')) initializeGradebookPage(); // UPDATED: Calls the new function
+    if (document.getElementById('gradeDistributionChart')) {
+        console.log("Init Dashboard...");
+    } else if (currentPath.startsWith('/class/')) {
+        initializeClassPage();
+        // initializeBulkStudentActions(); // <-- MOVED inside initializeClassPage
+    } else if (window.location.pathname.startsWith('/assignments')) {
+        initializeAssignmentsPageFilters(); // << UPDATED to use this function name
+    } else if (document.getElementById('searchInput') && currentPath.includes('/students')) {
+        initializeStudentPageFilters();
+        initializeBulkStudentActions(); // Only init bulk actions on /students page
+    } else if (document.getElementById('gradebookFilterForm')) {
+        initializeGradebookPage(); // UPDATED: Calls the new function
+        initializeGradebookSearch(); // NEW: Initialize gradebook search
+        initializeStatusLegendTooltips(); // NEW: Initialize status legend tooltips
+    }
 }
 
 // --- Page-Specific Filter/Setup Functions ---
@@ -355,13 +365,18 @@ function initializeStudentPageFilters() {
         studentRows.forEach(row => {
             const name = row.dataset.name || ''; const email = row.dataset.email || ''; const uid = row.dataset.uid || ''; const status = row.dataset.status || 'N/A';
             const gradeName = row.dataset.gradeName || ''; const sectionName = row.dataset.sectionName || ''; const campusName = row.dataset.campusName || '';
+            
+            // On /students page, we filter. On /class/ page, we don't.
+            // But this function is only called on /students page, so filters are fine.
             const matchesSearch = searchTerm === '' || name.includes(searchTerm) || email.includes(searchTerm) || uid.includes(searchTerm);
             const matchesStatus = statusValue === 'all' || status === statusValue;
             const matchesGrade = gradeValue === 'all' || gradeName === gradeValue.toLowerCase();
             const matchesSection = sectionValue === 'all' || sectionName === sectionValue.toLowerCase();
             const matchesCampus = campusValue === 'all' || campusName === campusValue.toLowerCase();
             const isVisible = matchesSearch && matchesStatus && matchesGrade && matchesSection && matchesCampus;
-            row.style.display = isVisible ? '' : 'none'; if (isVisible) visibleCount++;
+            
+            row.style.display = isVisible ? '' : 'none'; 
+            if (isVisible) visibleCount++;
         });
         const noStudentsRow = studentTableBody.querySelector('tr:not(.student-row)');
         if (noStudentsRow) noStudentsRow.style.display = (visibleCount === 0) ? '' : 'none';
@@ -373,92 +388,104 @@ function initializeStudentPageFilters() {
     if(gradeFilter) gradeFilter.addEventListener('change', window.filterStudentsGlobally);
     if(sectionFilter) sectionFilter.addEventListener('change', window.filterStudentsGlobally);
     if(campusFilter) campusFilter.addEventListener('change', window.filterStudentsGlobally);
-    window.filterStudentsGlobally();
+    window.filterStudentsGlobally(); // Run on load
 }
 
 
-// --- !! UPDATED: Assignments Page Filters (assignments.html) !! ---
+// --- !! FIXED: Assignments Page Filters (assignments.html) !! ---
 function initializeAssignmentsPageFilters() {
+    console.log("Initializing assignments page filters...");
+    
     const searchInput = document.getElementById('searchAssignments');
-    const classFilter = document.getElementById('classFilter'); // The dropdown select
+    const classFilter = document.getElementById('classFilter');
     const typeFilter = document.getElementById('typeFilter');
-    const assignmentsGrid = document.querySelector('.assignments-grid, .assignments-stack'); // Look for grid or stack
-    if (!assignmentsGrid) { console.warn("Assignments container (.assignments-grid or .assignments-stack) not found."); return; }
-
-    // Refresh the class filter dropdown itself on page load
-    if(classFilter) {
-        refreshSelectWithOptions(classFilter, '/api/get_classes', 'Error loading classes');
-    } else {
-        console.warn("Class filter dropdown (#classFilter) not found.");
+    const assignmentsGrid = document.querySelector('.assignments-grid, .assignments-stack');
+    
+    if (!assignmentsGrid) { 
+        console.error("Assignments container (.assignments-grid or .assignments-stack) not found."); 
+        return; 
     }
 
-    // Refresh checkboxes in the modal (if the modal exists on this page, though it's global now)
-    const checkboxList = document.getElementById('assignmentClassList');
-    if(checkboxList) refreshAssignmentClassCheckboxes(checkboxList); else console.warn("#assignmentClassList missing in modal.");
+    console.log("Found assignments grid, refreshing class filter...");
 
-    if (!searchInput && !classFilter && !typeFilter) console.warn("Assignment filter elements missing.");
+    // Refresh the class filter dropdown
+    if(classFilter) {
+        refreshSelectWithOptions(classFilter, '/api/get_classes', 'Error loading classes');
+    }
 
     // Select cards using the specific class
     const assignmentCards = Array.from(assignmentsGrid.querySelectorAll('.assignment-card'));
+    console.log(`Found ${assignmentCards.length} assignment cards`);
 
     function filterAssignments() {
-        console.log("Filtering assignments..."); // Keep this log
+        console.log("Filtering assignments...");
         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const selectedClassId = classFilter ? classFilter.value : 'all'; // Get selected value from dropdown
-        const typeValue = typeFilter ? typeFilter.value.toLowerCase() : 'all'; // Lowercase the filter type value
+        const selectedClassId = classFilter ? classFilter.value : 'all';
+        const typeValue = typeFilter ? typeFilter.value.toLowerCase() : 'all';
 
-        // Log the filter values being used
         console.log(`Filters - Search: "${searchTerm}", Class: ${selectedClassId}, Type: ${typeValue}`);
 
         let visibleCount = 0;
 
         assignmentCards.forEach((card, index) => {
-             // console.log(`-- Card ${index + 1}: "${card.dataset.title}" --`); // Keep this off unless debugging deeply
-
             const title = card.dataset.title?.toLowerCase() || '';
-            // Expecting data-class-ids="c1,c2,c3" from app.py/assignments.html
-            const assignedClassIds = (card.dataset.classIds || '').split(',').filter(id => id); // Split and remove empty strings
-            const cardType = card.dataset.type?.toLowerCase() || ''; // Lowercase the card's type
-
-            // console.log(`   Card Type (data-type): "${cardType}"`); // Keep off
-            // console.log(`   Filter Type Value: "${typeValue}"`); // Keep off
+            const assignedClassIds = (card.dataset.classIds || '').split(',').filter(id => id);
+            const cardType = card.dataset.type?.toLowerCase() || '';
 
             const matchesSearch = searchTerm === '' || title.includes(searchTerm);
-
-            // Check if the selected classId is 'all' OR if it's present in the card's list
             const matchesClass = selectedClassId === 'all' || assignedClassIds.includes(selectedClassId);
-
-            // Corrected comparison: use lowercased values
             const matchesType = typeValue === 'all' || cardType === typeValue;
 
-            // console.log(`   Matches Search: ${matchesSearch}`); // Keep off
-            // console.log(`   Matches Class: ${matchesClass}`); // Keep off
-            // console.log(`   Matches Type: ${matchesType}`); // Keep off
-
             const isVisible = matchesSearch && matchesClass && matchesType;
-            // console.log(`   Is Visible: ${isVisible}`); // Keep off
-
-            card.style.display = isVisible ? '' : 'none'; // Apply display style
+            
+            card.style.display = isVisible ? '' : 'none'; 
             if (isVisible) visibleCount++;
         });
 
         const emptyState = assignmentsGrid.querySelector('div:not(.assignment-card)');
-        if (emptyState) emptyState.style.display = (visibleCount === 0) ? '' : 'none';
-        console.log(`Filtering done. Visible count: ${visibleCount}`); // Log final count
+        if (emptyState) {
+            emptyState.style.display = (visibleCount === 0) ? '' : 'none';
+        }
+        
+        console.log(`Filtering complete. Visible count: ${visibleCount}`);
     }
 
-
     // Add event listeners
-    if (searchInput) searchInput.addEventListener('input', debounce(filterAssignments, 300));
-    if (classFilter) classFilter.addEventListener('change', filterAssignments);
-    if (typeFilter) typeFilter.addEventListener('change', filterAssignments);
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(filterAssignments, 300));
+    }
+    if (classFilter) {
+        classFilter.addEventListener('change', filterAssignments);
+    }
+    if (typeFilter) {
+        typeFilter.addEventListener('change', filterAssignments);
+    }
 
-    // Initial filter on load (wait a bit for dropdown refresh potentially)
-    setTimeout(filterAssignments, 150); // Slightly longer delay might help
+    // *** FIX: Don't run filter immediately. Wait for dropdown to populate first ***
+    // Run initial filter only after a longer delay to ensure dropdown is populated
+    setTimeout(() => {
+        // Check if class filter has been populated (has more than just "All Classes" option)
+        if (classFilter && classFilter.options.length > 1) {
+            console.log("Class filter populated, running initial filter");
+            filterAssignments();
+        } else {
+            console.log("Class filter not yet populated, showing all assignments");
+            // If filter isn't ready, just show all assignments
+            assignmentCards.forEach(card => {
+                card.style.display = '';
+            });
+        }
+    }, 1000); // Longer delay to ensure dropdown is populated
 }
-// --- !! END UPDATED !! ---
+// --- !! END FIXED !! ---
 
-function initializeClassPage() { console.log("Class view page init..."); updateClassSummaryStats(); }
+// --- **** UPDATED: initializeClassPage **** ---
+function initializeClassPage() { 
+    console.log("Class view page init..."); 
+    updateClassSummaryStats();
+    initializeBulkStudentActions(); // <-- **** ADDED THIS CALL ****
+}
+// --- **** END UPDATED **** ---
 
 // --- !! UPDATED initializeGradebookPage !! ---
 function initializeGradebookPage() {
@@ -489,8 +516,14 @@ function initializeGradebookPage() {
                 // Preserve initial class selection if valid for the assignment
                 const urlParams = new URLSearchParams(window.location.search);
                 const initialClassId = urlParams.get('class_id');
+                // Check if the option *exists* in the (now filtered) dropdown
                 if (initialClassId && classSelect.querySelector(`option[value="${initialClassId}"]`)) {
                     classSelect.value = initialClassId;
+                } else if (classSelect.options.length === 2) {
+                     // If only one class is relevant (plus the prompt), auto-select it
+                     classSelect.value = classSelect.options[1].value;
+                     // Auto-submit if auto-selection happens
+                     if (assignmentSelect.value && classSelect.value) form.submit();
                 }
             } else {
                  // Ensure class dropdown is disabled if no assignment selected initially
@@ -547,6 +580,27 @@ function initializeGradebookPage() {
 
         classSelect.disabled = false; // Enable the class dropdown
         classSelect.value = ""; // Reset to prompt
+
+        // If only one class is relevant, auto-select it and submit
+        if (relevantClasses.length === 1) {
+            
+            // Get the class_id from the URL, if it's already there
+            const urlParams = new URLSearchParams(window.location.search);
+            const classIdFromUrl = urlParams.get('class_id');
+
+            // Set the value in the dropdown
+            classSelect.value = relevantClasses[0].id;
+
+            // **** FIX ****
+            // Only auto-submit if the URL *doesn't* already have this class_id.
+            // This prevents the reload loop.
+            if (classIdFromUrl !== relevantClasses[0].id) {
+                console.log("Auto-selecting and submitting for single-class assignment...");
+                setTimeout(() => {
+                    if (assignmentSelect.value && classSelect.value) form.submit();
+                }, 100);
+            }
+        }
     };
 
     // 3. Add listener to Assignment dropdown
@@ -566,6 +620,117 @@ function initializeGradebookPage() {
 }
 // --- !! END UPDATED !! ---
 
+// --- Gradebook Search Functionality ---
+function initializeGradebookSearch() {
+    const searchInput = document.getElementById('gradebookStudentSearch');
+    const clearButton = document.getElementById('clearSearch');
+    const studentRows = document.querySelectorAll('.gradebook-student-row');
+    const studentCountElement = document.getElementById('studentCount');
+    
+    if (!searchInput || !studentRows.length) return;
+
+    function filterStudents() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        studentRows.forEach(row => {
+            const studentName = row.dataset.studentName || '';
+            const studentEmail = row.dataset.studentEmail || '';
+            
+            const matchesSearch = searchTerm === '' || 
+                                studentName.includes(searchTerm) || 
+                                studentEmail.includes(searchTerm);
+            
+            row.style.display = matchesSearch ? '' : 'none';
+            if (matchesSearch) visibleCount++;
+        });
+
+        // Update student count
+        if (studentCountElement) {
+            studentCountElement.textContent = visibleCount;
+        }
+
+        // Show/hide clear button
+        if (clearButton) {
+            clearButton.classList.toggle('hidden', searchTerm === '');
+        }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', debounce(filterStudents, 300));
+    
+    if (clearButton) {
+        clearButton.addEventListener('click', () => {
+            searchInput.value = '';
+            filterStudents();
+            searchInput.focus();
+        });
+    }
+
+    // Handle Escape key
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            filterStudents();
+        }
+    });
+
+    // Initial filter to set correct count
+    filterStudents();
+}
+
+// --- Status Legend Tooltips ---
+function initializeStatusLegendTooltips() {
+    // Add tooltips to status badges in the table
+    const statusBadges = document.querySelectorAll('.status-badge');
+    
+    statusBadges.forEach(badge => {
+        const statusText = badge.textContent.trim();
+        let tooltipText = '';
+        
+        switch(statusText) {
+            case 'Excellent':
+                tooltipText = '90-100%';
+                break;
+            case 'Good':
+                tooltipText = '70-89%';
+                break;
+            case 'Needs Help':
+                tooltipText = '60-69%';
+                break;
+            case 'At Risk':
+                tooltipText = '0-59%';
+                break;
+            default:
+                tooltipText = 'Not graded';
+        }
+        
+        badge.title = tooltipText;
+        badge.setAttribute('data-tooltip', tooltipText);
+    });
+    
+    // Add click handler to status legend items to show detailed info
+    const statusLegendItems = document.querySelectorAll('.status-legend-item');
+    statusLegendItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const range = this.dataset.range;
+            const status = this.dataset.status;
+            showToast(`${status}: ${range}`, 'info');
+        });
+    });
+
+    // Add hover effects to legend
+    const legendItems = document.querySelectorAll('.flex.items-center.gap-1');
+    legendItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.cursor = 'pointer';
+            this.style.opacity = '0.8';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.opacity = '1';
+        });
+    });
+}
 
 // --- Modal Functions ---
 function closeModal(modalId = 'studentModal') {
@@ -717,6 +882,8 @@ async function showEditStudentModal(studentId) {
 }
 
 function closeEditStudentModal() { closeModal('editStudentModal'); }
+
+// --- !! UPDATED showManageClassesModal !! ---
 async function showManageClassesModal() {
     const classesList = document.getElementById('classes-list'); if (!classesList) { console.error("Classes list element missing"); return; }
     classesList.innerHTML = '<p class="text-center text-gray-500">Loading...</p>'; showModal('manage-classes-modal');
@@ -726,13 +893,23 @@ async function showManageClassesModal() {
         classesList.innerHTML = '';
         if (classes && classes.length > 0) {
             classes.sort((a,b) => (a.name+a.section).localeCompare(b.name+b.section)).forEach(cls => {
-                const div = document.createElement('div'); div.className = 'flex justify-between items-center p-2 border-b';
-                div.innerHTML = `<span>${cls.name} - ${cls.section} (${cls.campus||'N/A'}, Students: ${cls.studentCount||0})</span><div><button onclick="showEditClassModal('${cls.id}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 text-xs">Edit</button><button onclick="deleteClass('${cls.id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2 text-xs ${cls.studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${cls.studentCount > 0 ? 'disabled title="Cannot delete class with students"' : ''}>Delete</button></div>`;
+                const div = document.createElement('div');
+                // Add responsive classes: flex-col on small, md:flex-row on medium+, md:items-center, gap-2
+                div.className = 'flex flex-col md:flex-row justify-between md:items-center p-2 border-b gap-2';
+                // Add text-sm, break-words for text span. Add flex-shrink-0 and w-full/md:w-auto to button div
+                div.innerHTML = `
+                    <span class="text-sm break-words">${cls.name} - ${cls.section} (${cls.campus||'N/A'}, Students: ${cls.studentCount||0})</span>
+                    <div class="flex-shrink-0 w-full md:w-auto flex items-center gap-2">
+                        <button onclick="showEditClassModal('${cls.id}')" class="w-1/2 md:w-auto bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 text-xs">Edit</button>
+                        <button onclick="deleteClass('${cls.id}')" class="w-1/2 md:w-auto bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs ${cls.studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${cls.studentCount > 0 ? 'disabled title="Cannot delete class with students"' : ''}>Delete</button>
+                    </div>`;
                 classesList.appendChild(div);
             });
         } else { classesList.innerHTML = '<p class="text-center text-gray-500">No classes found.</p>'; }
     } catch (error) { console.error('Error fetching classes:', error); classesList.innerHTML = '<p class="text-center text-red-600">Error loading classes.</p>'; showToast('Failed to load classes.', 'error'); }
 }
+// --- !! END UPDATED !! ---
+
 function closeManageClassesModal() { closeModal('manage-classes-modal'); }
 function showAddClassModal() {
     const form = document.getElementById('class-form'); const title = document.getElementById('class-form-title'); if(!form || !title) return;
@@ -1061,24 +1238,46 @@ async function deleteClass(classId) {
 }
 
 
-// --- Bulk Student Actions ---
+// --- **** UPDATED: Bulk Student Actions - FIXED VERSION **** ---
 function initializeBulkStudentActions() {
     const bulkActionContainer = document.getElementById('bulkActionContainer');
     const deleteSelectedButton = document.getElementById('deleteSelectedButton');
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-    const studentTableBody = document.getElementById('studentTableBody');
+    
+    // Find the correct table body ID
+    const studentTableBody = document.getElementById('studentTableBody') || document.getElementById('classStudentTableBody');
+    
     const selectedCountText = document.getElementById('selectedCountText');
 
     if (!bulkActionContainer || !deleteSelectedButton || !selectAllCheckbox || !studentTableBody || !selectedCountText) {
-         console.warn("Bulk action elements not fully found. Skipping bulk actions."); return;
+         console.warn("Bulk action elements not fully found. Skipping bulk actions."); 
+         return;
     }
+
     const studentCheckboxes = studentTableBody.querySelectorAll('.student-checkbox');
-    if (studentCheckboxes.length === 0) { console.log("No student checkboxes found."); bulkActionContainer.classList.add('hidden'); selectAllCheckbox.disabled = true; return; }
-    console.log("Initializing Bulk Student Actions...");
+    if (studentCheckboxes.length === 0) { 
+        console.log("No student checkboxes found."); 
+        bulkActionContainer.classList.add('hidden'); 
+        selectAllCheckbox.disabled = true; 
+        return; 
+    }
+
+    console.log("Initializing Bulk Student Actions... Found", studentCheckboxes.length, "checkboxes");
+
+    // Check if we are on the /students page
+    const onStudentsPage = (typeof window.filterStudentsGlobally === 'function');
 
     window.updateBulkActionsVisibility = () => {
-        const visibleCheckboxes = Array.from(studentCheckboxes).filter(cb => cb.closest('tr').style.display !== 'none');
+        let visibleCheckboxes;
+        if (onStudentsPage) {
+            visibleCheckboxes = Array.from(studentCheckboxes).filter(cb => cb.closest('tr').style.display !== 'none');
+        } else {
+            visibleCheckboxes = Array.from(studentCheckboxes);
+        }
+
         const checkedCount = visibleCheckboxes.filter(cb => cb.checked).length;
+        console.log("Checked count:", checkedCount, "Visible count:", visibleCheckboxes.length);
+        
         selectedCountText.textContent = `${checkedCount} student${checkedCount !== 1 ? 's' : ''} selected`;
         bulkActionContainer.classList.toggle('hidden', checkedCount === 0);
         deleteSelectedButton.disabled = (checkedCount === 0);
@@ -1087,33 +1286,122 @@ function initializeBulkStudentActions() {
     };
 
     selectAllCheckbox.addEventListener('change', () => {
-        const visibleCheckboxes = Array.from(studentCheckboxes).filter(cb => cb.closest('tr').style.display !== 'none');
-        visibleCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+        let visibleCheckboxes;
+        if (onStudentsPage) {
+             visibleCheckboxes = Array.from(studentCheckboxes).filter(cb => cb.closest('tr').style.display !== 'none');
+        } else {
+             visibleCheckboxes = Array.from(studentCheckboxes);
+        }
+        
+        console.log("Select all changed. Checked:", selectAllCheckbox.checked, "Visible checkboxes:", visibleCheckboxes.length);
+        
+        visibleCheckboxes.forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+            console.log("Setting checkbox", cb.value, "to", cb.checked);
+        });
+        
         updateBulkActionsVisibility();
     });
-    studentCheckboxes.forEach(cb => { cb.addEventListener('change', updateBulkActionsVisibility); });
+
+    studentCheckboxes.forEach(cb => { 
+        cb.addEventListener('change', () => {
+            console.log("Checkbox changed:", cb.value, "checked:", cb.checked);
+            updateBulkActionsVisibility();
+        });
+    });
 
     deleteSelectedButton.addEventListener('click', async () => {
-        const selectedIds = Array.from(studentCheckboxes).filter(cb => cb.checked && cb.closest('tr').style.display !== 'none').map(cb => cb.value);
-        if (selectedIds.length === 0) { showToast('No visible students selected.', 'info'); return; }
-        if (!confirm(`Delete ${selectedIds.length} student(s)?`)) return;
-        const originalButtonHTML = deleteSelectedButton.innerHTML; setLoadingState(deleteSelectedButton, true, originalButtonHTML);
+        if (deleteSelectedButton.disabled) {
+            console.warn("Delete already in progress. Ignoring extra click.");
+            return; 
+        }
+        let selectedIds;
+        if (onStudentsPage) {
+            selectedIds = Array.from(studentCheckboxes)
+                .filter(cb => cb.checked && cb.closest('tr').style.display !== 'none')
+                .map(cb => cb.value);
+        } else {
+            selectedIds = Array.from(studentCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+        }
+
+        console.log("Delete clicked. Selected IDs:", selectedIds);
+
+        if (selectedIds.length === 0) { 
+            showToast('No students selected.', 'info'); 
+            return; 
+        }
+
+        if (!confirm(`Are you sure you want to delete ${selectedIds.length} student(s)? This action cannot be undone.`)) {
+            return;
+        }
+
+        const originalButtonHTML = deleteSelectedButton.innerHTML; 
+        setLoadingState(deleteSelectedButton, true, originalButtonHTML);
+
         try {
-            const result = await fetchWithErrorHandling_Robust('/delete_students_bulk', { method: 'POST', body: JSON.stringify({ student_ids: selectedIds }) });
+            console.log("Sending delete request for IDs:", selectedIds);
+            
+            const result = await fetchWithErrorHandling_Robust('/delete_students_bulk', { 
+                method: 'POST', 
+                body: JSON.stringify({ student_ids: selectedIds }) 
+            });
+
+            console.log("Delete response:", result);
+
             if (result.success !== false) {
                 showToast(result.message || `${result.deleted_count || selectedIds.length} students deleted!`, 'success');
-                selectedIds.forEach(id => { document.querySelector(`tr[data-student-id="${id}"]`)?.remove(); });
-                selectAllCheckbox.checked = false; updateBulkActionsVisibility();
-            } else { throw new Error(result.message || 'Failed to delete students.'); }
-        } catch (error) { console.error('Bulk delete error:', error); showToast(`Error: ${error.message}`, 'error');
-        } finally { setLoadingState(deleteSelectedButton, false, originalButtonHTML); }
+                
+                // Remove rows from table
+                selectedIds.forEach(id => { 
+                    console.log("Removing row for student:", id);
+                    const row = document.querySelector(`tr[data-student-id="${id}"]`);
+                    if (row) {
+                        row.remove();
+                        console.log("Row removed successfully");
+                    } else {
+                        console.warn("Row not found for ID:", id);
+                    }
+                });
+                
+                // *** FIX: Uncheck all checkboxes after deletion ***
+                studentCheckboxes.forEach(cb => {
+                    if (cb.checked) {
+                        cb.checked = false;
+                    }
+                });
+                
+                // Reset selection state
+                selectAllCheckbox.checked = false; 
+                updateBulkActionsVisibility();
+                
+                // Update summary stats if on class page
+                if (window.location.pathname.startsWith('/class/')) {
+                    updateClassSummaryStats();
+                    const totalStudentsEl = document.getElementById('stat-total-students');
+                    if (totalStudentsEl) {
+                        const currentCount = parseInt(totalStudentsEl.textContent) || 0;
+                        totalStudentsEl.textContent = Math.max(0, currentCount - selectedIds.length);
+                    }
+                }
+            } else { 
+                throw new Error(result.message || 'Failed to delete students.'); 
+            }
+        } catch (error) { 
+            console.error('Bulk delete error:', error); 
+            showToast(`Error: ${error.message}`, 'error');
+        } finally { 
+            setLoadingState(deleteSelectedButton, false, originalButtonHTML); 
+        }
     });
-    updateBulkActionsVisibility();
+
+    updateBulkActionsVisibility(); // Initial check on load
 }
 // --- END Bulk Student Actions ---
 
 
-// --- Delete Functions ---
+// --- **** UPDATED: Delete Student Function **** ---
 async function deleteStudent(studentId) {
     if (confirm(`Delete student? This cannot be undone.`)) {
         try {
@@ -1121,7 +1409,22 @@ async function deleteStudent(studentId) {
             if (result.success) {
                 showToast(result.message || 'Student deleted!', 'success');
                 const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
-                if (row) row.remove(); else setTimeout(() => window.location.href = '/students', 1000);
+                if (row) {
+                     row.remove(); // Remove row from table
+                     
+                     // Update summary cards if on class page
+                     if (window.location.pathname.startsWith('/class/')) {
+                        updateClassSummaryStats();
+                        // Also update the total student count in the header
+                        const totalStudentsEl = document.getElementById('stat-total-students');
+                        if (totalStudentsEl) {
+                            const currentCount = parseInt(totalStudentsEl.textContent) || 0;
+                            totalStudentsEl.textContent = Math.max(0, currentCount - 1);
+                        }
+                    }
+                } else {
+                     setTimeout(() => window.location.href = '/students', 1000); // Fallback reload
+                }
                  const editModal = document.getElementById('editStudentModal');
                  if (editModal && !editModal.classList.contains('hidden') && editModal.querySelector(`form[data-student-id="${studentId}"]`)) {
                      closeEditStudentModal();
@@ -1130,6 +1433,8 @@ async function deleteStudent(studentId) {
         } catch (error) { console.error('Error deleting student:', error); showToast(`Error: ${error.message}`, 'error'); }
     }
 }
+// --- **** END UPDATED **** ---
+
 function deleteAssignment(assignmentId) {
      closeDropdowns();
      if (confirm('Delete this assignment? This will delete it for all classes and remove all associated grades. This cannot be undone.')) {
@@ -1299,4 +1604,3 @@ window.selectAllClasses = selectAllClasses;
 window.deselectAllClasses = deselectAllClasses;
 
 console.log("script.js loaded and all initializers called.");
-

@@ -577,7 +577,7 @@ def assignments():
                            assignment_types=ASSIGNMENT_TYPES)
 # --- END UPDATED /assignments route ---
 
-# --- UPDATED /gradebook route ---
+# --- **** UPDATED /gradebook route **** ---
 @app.route('/gradebook')
 def gradebook():
     data = load_data()
@@ -651,7 +651,7 @@ def gradebook():
                            students=filtered_students,
                            scores=student_scores)
 
-# --- END UPDATED /gradebook route ---
+# --- **** END UPDATED /gradebook route **** ---
 
 @app.route('/settings')
 def settings():

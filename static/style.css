@@ -366,7 +366,12 @@ body {
     flex-shrink: 0; /* Prevent shrinking */
 }
 
-.header-title { margin: 0; }
+.header-title { 
+    margin: 0; 
+    /* **** ADDED: Fix for header text overflow on small screens **** */
+    min-width: 0;
+    flex-shrink: 1;
+}
 .header-title h1 {
     font-size: 1.5rem; /* Slightly smaller default H1 */
     font-weight: 600; /* Semibold */
@@ -590,4 +595,5 @@ body {
     visibility: visible !important;
     opacity: 1 !important;
 }
+
 

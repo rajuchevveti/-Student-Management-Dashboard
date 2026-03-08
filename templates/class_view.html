@@ -34,27 +34,27 @@
 <!-- Class Statistics -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
-         {# --- ID for Total Students (JS might use later) --- #}
+         {# --- ADDED ID --- #}
         <div id="stat-total-students" class="text-2xl font-bold text-blue-600">{{ students|length }}</div>
         <div class="text-xs md:text-sm text-gray-500 mt-1">Total Students</div>
     </div>
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
         <div class="text-2xl font-bold text-green-600">
-             {# --- CORRECTED ID --- #}
+            {# --- ADDED ID --- #}
             <span id="stat-avg-grade">
-                 {% set total_grade = namespace(value=0) %}
-                 {% set count = namespace(value=0) %}
-                 {% for s in students if s.overallGrade is defined and s.overallGrade is not none %}
-                     {% set total_grade.value = total_grade.value + s.overallGrade %}
-                     {% set count.value = count.value + 1 %}
-                 {% endfor %}
-                 {% if count.value > 0 %}{{ (total_grade.value / count.value)|round }}%{% else %}N/A{% endif %}
+                {% set total_grade = namespace(value=0) %}
+                {% set count = namespace(value=0) %}
+                {% for s in students if s.overallGrade is defined and s.overallGrade is not none %}
+                    {% set total_grade.value = total_grade.value + s.overallGrade %}
+                    {% set count.value = count.value + 1 %}
+                {% endfor %}
+                {% if count.value > 0 %}{{ (total_grade.value / count.value)|round }}%{% else %}N/A{% endif %}
             </span>
         </div>
         <div class="text-xs md:text-sm text-gray-500 mt-1">Average Grade</div>
     </div>
      <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4 md:p-5 text-center">
-          {# --- CORRECTED ID --- #}
+         {# --- ADDED ID --- #}
         <div id="stat-at-risk" class="text-2xl font-bold text-red-600">
              {% set at_risk_count = namespace(value=0) %}
              {% for s in students %}
@@ -72,6 +72,18 @@
     </div>
 </div>
 
+<!-- **** NEW: Bulk Actions Bar **** -->
+<div id="bulkActionContainer" class="hidden bg-blue-100 border border-blue-300 rounded-xl shadow-md p-3 mb-4 flex justify-between items-center transition-all duration-300 ease-in-out">
+    <div>
+        <span id="selectedCountText" class="text-sm font-semibold text-blue-800">0 students selected</span>
+    </div>
+    <button id="deleteSelectedButton" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-trash-alt mr-2"></i>Delete Selected
+    </button>
+</div>
+<!-- **** END NEW **** -->
+
+
 <!-- Students Table -->
 <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
     <div class="p-4 md:p-5 border-b border-gray-200">
@@ -81,6 +93,10 @@
         <table class="min-w-full">
             <thead class="bg-gray-50">
                 <tr>
+                    <!-- **** NEW: Select All Checkbox **** -->
+                    <th class="px-4 py-3 text-left">
+                        <input type="checkbox" id="selectAllCheckbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" aria-label="Select all students">
+                    </th>
                     <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student</th>
                     <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">UID</th>
                     <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">Roll No</th>
@@ -89,15 +105,30 @@
                     <th class="px-4 md:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            {# --- ADDED ID HERE --- #}
-            <tbody id="classStudentTableBody" class="divide-y divide-gray-200">
+            <!-- **** UPDATED: Added id="classStudentTableBody" **** -->
+            <tbody class="divide-y divide-gray-200" id="classStudentTableBody">
                 {% for student in students %}
                 <tr class="hover:bg-gray-50 transition-colors duration-150 student-row" data-student-id="{{ student.id }}">
+                    <!-- **** NEW: Student Checkbox **** -->
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <input type="checkbox" name="student_id" value="{{ student.id }}" class="student-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" aria-label="Select student {{ student.name }}">
+                    </td>
                     <td class="px-4 md:px-6 py-3 whitespace-nowrap">
                         <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-gray-200">
-                                <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?'}}</span>
-                            </div>
+                            
+                            <!-- **** Profile Picture Logic **** -->
+                            {% if student.photo %}
+                                <img src="{{ student.photo }}" 
+                                     alt="{{ student.name }}" 
+                                     class="w-8 h-8 rounded-full object-cover mr-3 flex-shrink-0"
+                                     onerror="this.onerror=null; this.src='https://placehold.co/32x32/E2E8F0/A0AEC0?text={{ student.name[0] | upper if student.name else '?' }}';">
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 flex-shrink-0 bg-gray-200">
+                                    <span class="text-sm font-medium text-gray-600">{{ student.name[0] | upper if student.name else '?'}}</span>
+                                </div>
+                            {% endif %}
+                            <!-- **** End Profile Picture Logic **** -->
+
                             <div>
                                 <p class="text-sm font-medium text-gray-900 truncate">{{ student.name }}</p>
                                 <p class="text-xs text-gray-500 truncate hidden sm:block">{{ student.email }}</p>
@@ -129,12 +160,13 @@
                     <td class="px-4 md:px-6 py-3 whitespace-nowrap">
                         <a href="{{ url_for('student_profile', student_id=student.id) }}"
                                 class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
-                             View Profile
+                            View Profile
                         </a>
                     </td>
                 </tr>
                 {% else %}
-                 <tr><td colspan="6" class="text-center py-10 px-6 text-gray-500"><i class="fas fa-users text-3xl mb-3 text-gray-300"></i><br>No students found.</td></tr>
+                 <!-- **** UPDATED: Colspan changed from 6 to 7 **** -->
+                 <tr><td colspan="7" class="text-center py-10 px-6 text-gray-500"><i class="fas fa-users text-3xl mb-3 text-gray-300"></i><br>No students found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -143,43 +175,10 @@
 {% endblock %}
 
 {% block scripts %}
-{# Ensure global script.js is loaded via base.html #}
-<script>
-    // Functions like updateGrade, getStatusInfoFromGrade, updateStatusBadge,
-    // and updateClassSummaryStats are assumed to be defined in the global script.js
-
-    // Make sure these JS helper functions are available (ideally in script.js)
-     if (typeof getStatusInfoFromGrade === 'undefined') {
-        function getStatusInfoFromGrade(grade) {
-            if (grade === null || grade === undefined || isNaN(grade)) return { text: 'N/A', classes: 'bg-gray-100 text-gray-800'};
-            grade = parseInt(grade);
-            if (grade >= 90) return { text: 'Excellent', classes: 'bg-green-100 text-green-800'};
-            if (grade >= 70) return { text: 'Good', classes: 'bg-blue-100 text-blue-800'};
-            if (grade >= 60) return { text: 'Needs Help', classes: 'bg-yellow-100 text-yellow-800'};
-            return { text: 'At Risk', classes: 'bg-red-100 text-red-800'};
-        }
-    }
-
-     if (typeof updateStatusBadge === 'undefined') {
-         function updateStatusBadge(studentId, grade) {
-            const row = document.querySelector(`tr[data-student-id="${studentId}"]`);
-            if (!row) return;
-            const statusCell = row.querySelector('.status-cell');
-            if (!statusCell) return;
-            const statusInfo = getStatusInfoFromGrade(grade);
-            statusCell.innerHTML = `<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.classes} status-badge">${statusInfo.text}</span>`;
-        }
-    }
-
-    // This function definition is actually in script.js now,
-    // but leaving a check here ensures it's defined.
-    if (typeof updateClassSummaryStats === 'undefined') {
-        console.error("updateClassSummaryStats function is missing from script.js!");
-        // Define a dummy function to prevent further errors if script.js failed
-        function updateClassSummaryStats() {
-            console.warn("Using dummy updateClassSummaryStats function.");
-        }
-    }
-</script>
+{# 
+  All necessary JS functions (updateGrade, getStatusInfoFromGrade, updateStatusBadge,
+  updateClassSummaryStats, and initializeBulkStudentActions)
+  are now handled in the global script.js file.
+#}
 {% endblock %}
 
